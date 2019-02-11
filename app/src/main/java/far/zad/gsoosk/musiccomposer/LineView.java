@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.util.ArrayList;
 
 import far.zad.gsoosk.musiccomposer.Notes.Note;
 
@@ -24,6 +23,11 @@ public class LineView extends View {
     private Note note = null;
     private Rect previewRect = null;
     private boolean isNoteSelected = false;
+    private int noteBase;
+
+    public void setNoteBase(int noteBase) {
+        this.noteBase = noteBase;
+    }
 
     //Note Listener
     public interface LineViewListener
@@ -125,13 +129,13 @@ public class LineView extends View {
     }
     public void addNewNote(int noteNumber, float x, float y)
     {
-        note = new Note(noteNumber, x, y);
+        note = new Note(noteNumber, x, y, noteBase);
         drawNote(note);
         isNoteSelected = true;
         if(listener != null)
             listener.onNoteAdded(note);
 
-        Log.d("new Note : ", Integer.toString(noteNumber));
+        Log.d("new Note : ", Integer.toString(noteNumber) + " " + Integer.toString(noteBase));
     }
     public void drawNote(Note note)
     {
@@ -159,8 +163,6 @@ public class LineView extends View {
             x+= height/2;
             x += height;
         }
-
-
 
     }
     public void touch(float x, float y)

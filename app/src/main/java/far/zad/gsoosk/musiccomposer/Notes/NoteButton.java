@@ -1,4 +1,4 @@
-package far.zad.gsoosk.musiccomposer;
+package far.zad.gsoosk.musiccomposer.Notes;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -8,6 +8,8 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
+
+import far.zad.gsoosk.musiccomposer.R;
 
 public class NoteButton extends android.support.v7.widget.AppCompatImageView {
 
@@ -39,7 +41,10 @@ public class NoteButton extends android.support.v7.widget.AppCompatImageView {
     public void setIndex(int index) {
         this.index = index;
     }
-
+    public int getIndex()
+    {
+        return index;
+    }
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);

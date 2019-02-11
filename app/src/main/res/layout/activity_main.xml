@@ -21,70 +21,70 @@
             android:layout_weight="12">
 
 
-            <far.zad.gsoosk.musiccomposer.NoteButton
+            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
                 android:id="@+id/bnote_0"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/note_0" />
 
-            <far.zad.gsoosk.musiccomposer.NoteButton
+            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
                 android:id="@+id/bnote_1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/note_1_1" />
 
-            <far.zad.gsoosk.musiccomposer.NoteButton
+            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
                 android:id="@+id/bnote_2"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/note_2_1" />
 
-            <far.zad.gsoosk.musiccomposer.NoteButton
+            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
                 android:id="@+id/bnote_3"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/note_3_1" />
 
-            <far.zad.gsoosk.musiccomposer.NoteButton
+            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
                 android:id="@+id/bnote_4"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/note_4_1" />
 
-            <far.zad.gsoosk.musiccomposer.NoteButton
+            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
                 android:id="@+id/bnote_5"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/note_5_1" />
 
-            <far.zad.gsoosk.musiccomposer.NoteButton
+            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
                 android:id="@+id/bsilent_0"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/silent_0" />
 
-            <far.zad.gsoosk.musiccomposer.NoteButton
+            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
                 android:id="@+id/bsilent_1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/silent_1" />
 
-            <far.zad.gsoosk.musiccomposer.NoteButton
+            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
                 android:id="@+id/bsilent_2"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/silent_2" />
 
-            <far.zad.gsoosk.musiccomposer.NoteButton
+            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
                 android:id="@+id/bsilent_3"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
