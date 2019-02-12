@@ -5,7 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Picture;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.PictureDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -62,7 +65,7 @@ public class LineView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
-        float height = canvas.getHeight() / 23;
+        float height = canvas.getHeight() / 24;
         noteHeight = height;
 
         drawLines(canvas);
@@ -120,7 +123,7 @@ public class LineView extends View {
     }
     public void touchUp(float x, float y)
     {
-        int noteNumber = (int) (y / noteHeight);
+        int noteNumber = (int) ((y - noteHeight/2) / noteHeight);
         if(noteNumber >= 23)
             noteNumber = 22;
         addNewNote(noteNumber, x, y);
@@ -139,19 +142,31 @@ public class LineView extends View {
     }
     public void drawNote(Note note)
     {
-        Rect rect = new Rect();
-        int  y = ( note.getNoteNumber()) * ((int) noteHeight);
-        rect.set(0, y,  can.getWidth(), y + (int) noteHeight);
-        paint.setColor(getResources().getColor(R.color.colorAccent));
-        can.drawRect(rect, paint);
-
+        if(note.getKind() == 0)
+            drawNote_0(note);
+        else
+        {
+            Rect rect = new Rect();
+            int  y = (int) ( note.getNoteNumber() *  noteHeight + noteHeight / 2);
+            rect.set(0, y,  can.getWidth(), y + (int) noteHeight);
+            paint.setColor(getResources().getColor(R.color.colorAccent));
+            can.drawRect(rect, paint);
+        }
     }
+    public void drawNote_0(Note note)
+    {
+        Drawable notePic = getResources().getDrawable(R.drawable.note_0);
+        notePic.setBounds(0, 0, can.getWidth(), can.getHeight());
+        notePic.draw(can);
+    }
+
+
     public void drawLines(Canvas canvas)
     {
         float height = noteHeight;
-        float x = height;
+        float x = height + height / 2;
         paint.setStrokeWidth(LINE_WIDTH);
-        for(int i = 0 ; i < 12 ; i++)
+        for(int i = 0 ; i < 11 ; i++)
         {
             if(i < 3 || i > 7)
                 paint.setColor(getResources().getColor(R.color.secondary_line_color));
@@ -164,14 +179,16 @@ public class LineView extends View {
             x += height;
         }
 
+
+
     }
     public void touch(float x, float y)
     {
-        int noteNumber = (int) (y / noteHeight);
+        int noteNumber = (int) ((y - noteHeight/2) / noteHeight);
         if(noteNumber >= 23)
             noteNumber = 22;
         previewRect = new Rect();
-        int  height = ( noteNumber ) * ((int) noteHeight);
+        int  height = (int) (( noteNumber * noteHeight) + (noteHeight / 2));
         previewRect.set(0, height - (int) noteHeight / 2,  can.getWidth(), height + (int) noteHeight * 3/2);
     }
 }

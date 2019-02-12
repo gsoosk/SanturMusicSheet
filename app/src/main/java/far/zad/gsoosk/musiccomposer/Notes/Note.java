@@ -1,5 +1,7 @@
 package far.zad.gsoosk.musiccomposer.Notes;
 
+import android.graphics.Canvas;
+
 public class Note {
     private int noteNumber;
     private int kind;
@@ -16,5 +18,6 @@ public class Note {
     {
         return noteNumber;
     }
+    public int getKind() {return kind;}
 
 }
