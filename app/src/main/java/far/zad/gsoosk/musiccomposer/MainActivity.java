@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         setNoteBarListener();
         addNoteLine();
         setInputViewNoteBase();
+        handleUndoBtn();
 
 
     }
@@ -104,5 +106,21 @@ public class MainActivity extends AppCompatActivity {
         LineView view = (LineView) linearLayout.getChildAt(linearLayout.getChildCount() - 1);
         view.setNoteBase(selectedBtn.getIndex());
     }
+    public void handleUndoBtn()
+    {
+        ImageButton btn = (ImageButton) findViewById(R.id.undo_btn);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
+                if(linearLayout.getChildCount() > 1)
+                {
+                    //Remove last note
+                    linearLayout.removeViewAt(linearLayout.getChildCount() - 2);
+                    notes.remove(notes.size() - 1);
 
+                }
+            }
+        });
+    }
 }
