@@ -48,10 +48,9 @@ public class NoteButton extends android.support.v7.widget.AppCompatImageView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        paint.setColor(getResources().getColor(R.color.colorAccent));
-        paint.setStrokeWidth(3);
+        paint.setColor(getResources().getColor(R.color.btn_selected));
         if(selected)
-            canvas.drawLine(0, canvas.getHeight() - 3 , canvas.getWidth(), canvas.getHeight() - 3, paint);
+            canvas.drawRect(0 , 0, canvas.getWidth()  , canvas.getHeight() , paint);
 
     }
 }

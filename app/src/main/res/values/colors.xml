@@ -6,4 +6,5 @@
     <color name="main_line_color">#000000</color>
     <color name="secondary_line_color">#afafaf</color>
     <color name="note_prev">#79ffa5a5</color>
+    <color name="btn_selected">#79FF4A4A</color>
 </resources>
