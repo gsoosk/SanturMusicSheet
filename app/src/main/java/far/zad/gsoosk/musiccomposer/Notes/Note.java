@@ -3,6 +3,8 @@ package far.zad.gsoosk.musiccomposer.Notes;
 import android.graphics.Canvas;
 
 public class Note {
+    public static final float  NOTE_0_WIDTH_ON_HEIGHT = 76 / 46;
+
     private int noteNumber;
     private int kind;
     private float x;
@@ -19,5 +21,6 @@ public class Note {
         return noteNumber;
     }
     public int getKind() {return kind;}
+
 
 }

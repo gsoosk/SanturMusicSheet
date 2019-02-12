@@ -153,10 +153,16 @@ public class LineView extends View {
             can.drawRect(rect, paint);
         }
     }
+
+
     public void drawNote_0(Note note)
     {
         Drawable notePic = getResources().getDrawable(R.drawable.note_0);
-        notePic.setBounds(0, 0, can.getWidth(), can.getHeight());
+        float y = note.getNoteNumber() * noteHeight;
+
+        float note0Width = noteHeight * 2  * Note.NOTE_0_WIDTH_ON_HEIGHT;
+        notePic.setBounds(can.getWidth() / 2 - (int) note0Width,  (int) y,
+                can.getWidth() / 2 + (int) note0Width,  (int) (y + 2*noteHeight));
         notePic.draw(can);
     }
 
