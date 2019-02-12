@@ -146,16 +146,10 @@ public class LineView extends View {
             drawNote_0(note);
         else if(note.getKind() == 1 || note.getKind() == 2)
             drawNote_1_2(note);
-        else if(note.getKind() == 3 || note.getKind() == 4 || note.getKind() == 5 )
+        else if(note.getKind() >= 3 &&  note.getKind() <= 5 )
             drawNote_3to5(note);
-        else
-        {
-            Rect rect = new Rect();
-            int  y = (int) ( note.getNoteNumber() *  noteHeight + noteHeight / 2);
-            rect.set(0, y,  can.getWidth(), y + (int) noteHeight);
-            paint.setColor(getResources().getColor(R.color.colorAccent));
-            can.drawRect(rect, paint);
-        }
+        else if(note.getKind() >= 6 && note.getKind() <=  9)
+            drawNote_6to9(note);
     }
 
 
@@ -262,6 +256,36 @@ public class LineView extends View {
         float note1Width = Note.NOTE_3_WIDTH_ON_HEIGHT_DOWN(note1Height/2);
         notePic.setBounds((int) (can.getWidth() / 2 -  note1Width),  (int) (y),
                 (int) (can.getWidth() / 2 +  note1Width),  (int) (y + note1Height));
+        notePic.draw(can);
+    }
+    public void drawNote_6to9(Note note)
+    {
+        Drawable notePic = null;
+        switch (note.getKind())
+        {
+            case 6 :
+                notePic = getResources().getDrawable( R.drawable.silent_0);
+                break;
+            case 7 :
+                notePic = getResources().getDrawable( R.drawable.silent_1);
+                break;
+            case 8 :
+                notePic = getResources().getDrawable( R.drawable.silent_2);
+                break;
+            case 9 :
+                notePic = getResources().getDrawable( R.drawable.silent_3);
+                break;
+        }
+        drawSilentNote(notePic);
+
+    }
+    public void drawSilentNote(Drawable notePic)
+    {
+        float height =  7 * noteHeight / 2;
+        float width = Note.SILENT_NOTE_WIDTH_ON_HEIGHT(height);
+
+        notePic.setBounds((int) (can.getWidth() / 2 -  width),  (int) (can.getHeight() / 2 - height),
+                (int) (can.getWidth() / 2 + width),  (int) (can.getHeight() / 2 + height));
         notePic.draw(can);
     }
     public void drawLines(Canvas canvas)
