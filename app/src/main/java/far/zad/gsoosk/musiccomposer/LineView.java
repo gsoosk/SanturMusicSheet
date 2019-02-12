@@ -146,6 +146,8 @@ public class LineView extends View {
             drawNote_0(note);
         else if(note.getKind() == 1 || note.getKind() == 2)
             drawNote_1_2(note);
+        else if(note.getKind() == 3 || note.getKind() == 4 || note.getKind() == 5 )
+            drawNote_3to5(note);
         else
         {
             Rect rect = new Rect();
@@ -196,7 +198,6 @@ public class LineView extends View {
             }
         }
 
-
     }
     public void drawNote1Up(Note note, Drawable notePic)
     {
@@ -217,9 +218,52 @@ public class LineView extends View {
                 (int) (can.getWidth() / 2 +  note1Width),  (int) (y + note1Height));
         notePic.draw(can);
     }
+    public void drawNote_3to5(Note note)
+    {
+        Drawable notePic = null;
+        switch (note.getKind())
+        {
+            case 3 :
+                notePic = getResources().getDrawable(
+                        note.getNoteNumber() > 10 ? R.drawable.note_3_1 : R.drawable.note_3_2);
+                break;
+            case 4 :
+                notePic = getResources().getDrawable(
+                        note.getNoteNumber() > 10 ? R.drawable.note_4_1 : R.drawable.note_4_2);
+                break;
+            case 5 :
+                notePic = getResources().getDrawable(
+                        note.getNoteNumber() > 10 ? R.drawable.note_5_1 : R.drawable.note_5_2);
+                break;
+        }
 
+        if(note.getNoteNumber() > 10) {
+            drawNote_3to5Up(note, notePic);
+        }
+        else {
+            drawNote_3to5Down(note, notePic);
+        }
 
+    }
+    public void drawNote_3to5Up(Note note, Drawable notePic)
+    {
+        float y = note.getNoteNumber() * noteHeight + 2*noteHeight;
+        float note1Height = Note.NOTE_3_HEIGHT_ON_HEAD(noteHeight * 2 );
+        float note1Width = Note.NOTE_3_WIDTH_ON_HEIGHT(note1Height/2);
 
+        notePic.setBounds((int) (can.getWidth() / 2 -  note1Width),  (int) (y - note1Height),
+                (int) (can.getWidth() / 2 +  note1Width),  (int) (y));
+        notePic.draw(can);
+    }
+    public void drawNote_3to5Down(Note note, Drawable notePic)
+    {
+        float y = note.getNoteNumber() * noteHeight ;
+        float note1Height = Note.NOTE_3_HEIGHT_ON_HEAD_DOWN(noteHeight * 2 );
+        float note1Width = Note.NOTE_3_WIDTH_ON_HEIGHT_DOWN(note1Height/2);
+        notePic.setBounds((int) (can.getWidth() / 2 -  note1Width),  (int) (y),
+                (int) (can.getWidth() / 2 +  note1Width),  (int) (y + note1Height));
+        notePic.draw(can);
+    }
     public void drawLines(Canvas canvas)
     {
         float height = noteHeight;
