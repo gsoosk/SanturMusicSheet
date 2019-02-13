@@ -73,6 +73,8 @@ public class LineView extends View {
 
         canvas.drawBitmap(bitmap, 0, 0, paint);
 
+        drawKharakNumber(canvas);
+
         paint.setColor(getResources().getColor(R.color.note_prev));
         if(previewRect != null)
             canvas.drawRect(previewRect, paint);
@@ -80,6 +82,17 @@ public class LineView extends View {
 
     }
 
+    public void drawKharakNumber(Canvas can)
+    {
+        if(note != null) {
+            if (note.getNoteNumber() == 7 || note.getNoteNumber() == 8 || note.getNoteNumber() == 14 || note.getNoteNumber() == 15) {
+                paint.setTextSize(60);
+                paint.setColor(getResources().getColor(R.color.main_line_color));
+                can.drawText(Integer.toString(note.getKharak()), can.getWidth() / 2, noteHeight * 3 / 2, paint);
+            }
+        }
+
+    }
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -92,9 +105,9 @@ public class LineView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        float x = event.getX();
+        float y = event.getY();
         if(!isNoteSelected) {
-            float x = event.getX();
-            float y = event.getY();
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     touch(x, y);
@@ -103,7 +116,6 @@ public class LineView extends View {
                 case MotionEvent.ACTION_MOVE:
                     touch(x, y);
                     invalidate();
-                    ok();
                     break;
                 case MotionEvent.ACTION_UP:
                     touchUp(x, y);
@@ -114,18 +126,31 @@ public class LineView extends View {
                     invalidate();
                     break;
             }
+        } else if(note.getNoteNumber() == 7 || note.getNoteNumber() == 8 || note.getNoteNumber() == 14 || note.getNoteNumber() == 15)
+        {
+            if(event.getAction() == MotionEvent.ACTION_UP)
+            {
+                changeKharak(x, y);
+                invalidate();
+            }
         }
         return true;
     }
-    public void ok()
+    public void changeKharak(float x, float y)
     {
-        invalidate();
+        int noteNumber = (int) ((y - noteHeight/2) / noteHeight);
+        if(noteNumber == 0){
+            note.changeKharak();
+        }
+
     }
     public void touchUp(float x, float y)
     {
         int noteNumber = (int) ((y - noteHeight/2) / noteHeight);
         if(noteNumber >= 23)
             noteNumber = 22;
+        if(noteNumber <= 0)
+            noteNumber = 0;
         addNewNote(noteNumber, x, y);
         previewRect = null;
 
@@ -133,7 +158,13 @@ public class LineView extends View {
     public void addNewNote(int noteNumber, float x, float y)
     {
         note = new Note(noteNumber, x, y, noteBase);
+        if(noteNumber == 15 || noteNumber == 8)
+            note.setKharak(8);
+        else if(noteNumber == 7 || noteNumber == 14)
+            note.setKharak(2);
+
         drawNote(note);
+
         isNoteSelected = true;
         if(listener != null)
             listener.onNoteAdded(note);
@@ -305,6 +336,7 @@ public class LineView extends View {
             x+= height/2;
             x += height;
         }
+
 
 
 

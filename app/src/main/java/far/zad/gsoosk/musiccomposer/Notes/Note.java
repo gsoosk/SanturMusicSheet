@@ -19,6 +19,7 @@ public class Note {
     private int kind;
     private float x;
     private float y;
+    private int kharak = 0;
     public Note(int _noteNumber, float _x, float _y, int _kind)
     {
         x = _x;
@@ -31,7 +32,22 @@ public class Note {
         return noteNumber;
     }
     public int getKind() {return kind;}
-
+    public void setKharak(int kharak)
+    {
+        this.kharak = kharak;
+    }
+    public int getKharak(){return kharak;}
+    public void changeKharak()
+    {
+        if(kharak == 8)
+            kharak = 1;
+        else if(kharak == 1)
+            kharak = 8;
+        else if(kharak == 9)
+            kharak = 2;
+        else if(kharak == 2)
+            kharak = 9;
+    }
 
 
 }
