@@ -9,11 +9,18 @@ import android.graphics.Picture;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+
+import java.util.ArrayList;
 
 import far.zad.gsoosk.musiccomposer.Notes.Note;
 
@@ -146,7 +153,12 @@ public class LineView extends View {
     }
     public void touchUp(float x, float y)
     {
-        int noteNumber = (int) ((y - noteHeight/2) / noteHeight);
+        int noteNumber;
+        if(noteBase >= 6 && noteBase <=  9)
+            noteNumber = 0;
+        else
+            noteNumber = (int) ((y - noteHeight/2) / noteHeight);
+
         if(noteNumber >= 23)
             noteNumber = 22;
         if(noteNumber <= 0)
@@ -157,6 +169,7 @@ public class LineView extends View {
     }
     public void addNewNote(int noteNumber, float x, float y)
     {
+        playSound();
         note = new Note(noteNumber, x, y, noteBase);
         if(noteNumber == 15 || noteNumber == 8)
             note.setKharak(8);
@@ -343,11 +356,21 @@ public class LineView extends View {
     }
     public void touch(float x, float y)
     {
+
         int noteNumber = (int) ((y - noteHeight/2) / noteHeight);
+
         if(noteNumber >= 23)
             noteNumber = 22;
         previewRect = new Rect();
         int  height = (int) (( noteNumber * noteHeight) + (noteHeight / 2));
         previewRect.set(0, height - (int) noteHeight / 2,  can.getWidth(), height + (int) noteHeight * 3/2);
+    }
+    public void playSound()
+    {
+
+
+    }
+    public void play()
+    {
     }
 }

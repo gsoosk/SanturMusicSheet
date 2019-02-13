@@ -1,7 +1,12 @@
 package far.zad.gsoosk.musiccomposer;
 
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
@@ -18,6 +23,11 @@ public class MainActivity extends AppCompatActivity {
     public static final int YEK_LA_CHANG_WIDTH = 100;
     private ArrayList<Note> notes  = new ArrayList<Note>();
     private NoteButton selectedBtn = null;
+    private SoundPool sp;
+    private int[] mainSounds = new int[23];
+    private int[] secondarySounds = new int[4];
+    private int kookSound;
+
 
 
 
@@ -31,9 +41,19 @@ public class MainActivity extends AppCompatActivity {
         addNoteLine();
         setInputViewNoteBase();
         handleUndoBtn();
+        createSoundPool();
+
+
 
 
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        sp.release();
+    }
+
     public int dps(int x)
     {
         final float scale = getResources().getDisplayMetrics().density;
@@ -55,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
             public void onNoteAdded(Note note) {
                 notes.add(note);
                 addNoteLine();
+
+                playNote(note);
 
                 getWindow().getDecorView().post(new Runnable() {
                     @Override
@@ -122,5 +144,74 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    public void createSoundPool()
+    {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build();
+
+            sp = new SoundPool.Builder()
+                    .setMaxStreams(10)
+                    .setAudioAttributes(audioAttributes)
+                    .build();
+        }
+        else
+        {
+            sp = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+        }
+
+        mainSounds[0] = sp.load(getBaseContext(), R.raw.ll9, 1);
+        mainSounds[1] = sp.load(getBaseContext(), R.raw.ll8, 1);
+        mainSounds[2] = sp.load(getBaseContext(), R.raw.ll7, 1);
+        mainSounds[3] = sp.load(getBaseContext(), R.raw.ll6, 1);
+        mainSounds[4] = sp.load(getBaseContext(), R.raw.ll5, 1);
+        mainSounds[5] = sp.load(getBaseContext(), R.raw.ll4, 1);
+        mainSounds[6] = sp.load(getBaseContext(), R.raw.ll3, 1);
+        mainSounds[7] = sp.load(getBaseContext(), R.raw.ll2, 1);
+        mainSounds[8] = sp.load(getBaseContext(), R.raw.l8, 1);
+        mainSounds[9] = sp.load(getBaseContext(), R.raw.l7, 1);
+        mainSounds[10] = sp.load(getBaseContext(), R.raw.l6, 1);
+        mainSounds[11] = sp.load(getBaseContext(), R.raw.l5, 1);
+        mainSounds[12] = sp.load(getBaseContext(), R.raw.l4, 1);
+        mainSounds[13] = sp.load(getBaseContext(), R.raw.l3, 1);
+        mainSounds[14] = sp.load(getBaseContext(), R.raw.l2, 1);
+        mainSounds[15] = sp.load(getBaseContext(), R.raw.r8, 1);
+        mainSounds[16] = sp.load(getBaseContext(), R.raw.r7, 1);
+        mainSounds[17] = sp.load(getBaseContext(), R.raw.r6, 1);
+        mainSounds[18] = sp.load(getBaseContext(), R.raw.r5, 1);
+        mainSounds[19] = sp.load(getBaseContext(), R.raw.r4, 1);
+        mainSounds[20] = sp.load(getBaseContext(), R.raw.r3, 1);
+        mainSounds[21] = sp.load(getBaseContext(), R.raw.r2, 1);
+        mainSounds[22] = sp.load(getBaseContext(), R.raw.r1, 1);
+
+        secondarySounds[0] = sp.load(getBaseContext(), R.raw.l9, 1);
+        secondarySounds[1] = sp.load(getBaseContext(), R.raw.ll1, 1);
+        secondarySounds[2] = sp.load(getBaseContext(), R.raw.r9, 1);
+        secondarySounds[3] = sp.load(getBaseContext(), R.raw.l1, 1);
+
+
+        kookSound = sp.load(getBaseContext(), R.raw.kook_kardan, 1);
+        sp.play(kookSound, 1, 1, 0, 0, 1);
+
+
+    }
+    public void playNote(Note note)
+    {
+        if(note.getKind() >= 6 && note.getKind() <=  9)
+            return ;
+        if(note.getNoteNumber() == 7 && note.getKharak() == 9)
+            sp.play(secondarySounds[0], 1, 1, 0, 0, 1);
+        else if(note.getNoteNumber() == 8 && note.getKharak() == 1)
+            sp.play(secondarySounds[1], 1, 1, 0, 0, 1);
+        else if(note.getNoteNumber() == 14 && note.getKharak() == 9)
+            sp.play(secondarySounds[2], 1, 1, 0, 0, 1);
+        else if(note.getNoteNumber() == 15 && note.getKharak() == 1)
+            sp.play(secondarySounds[3], 1, 1, 0, 0, 1);
+        else
+            sp.play(mainSounds[note.getNoteNumber()], 1, 1, 0, 0, 1);
     }
 }

@@ -2,6 +2,8 @@ package far.zad.gsoosk.musiccomposer.Notes;
 
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.view.View;
 
 import far.zad.gsoosk.musiccomposer.R;
 
@@ -48,6 +50,7 @@ public class Note {
         else if(kharak == 2)
             kharak = 9;
     }
+
 
 
 }
