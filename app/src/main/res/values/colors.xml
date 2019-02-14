@@ -7,4 +7,5 @@
     <color name="secondary_line_color">#afafaf</color>
     <color name="note_prev">#79ffa5a5</color>
     <color name="btn_selected">#79FF4A4A</color>
+    <color name="playing">#3662FF69</color>
 </resources>

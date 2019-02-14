@@ -50,6 +50,44 @@ public class Note {
         else if(kharak == 2)
             kharak = 9;
     }
+    public int getSleepTime(int time)
+    {
+        int sleepTime = time;
+        switch (kind)
+        {
+            case 0 :
+                sleepTime = time * 4;
+                break;
+            case 1 :
+                sleepTime = time * 2;
+                break;
+            case 2 :
+                sleepTime = time ;
+                break;
+            case 3 :
+                sleepTime = time / 2;
+                break;
+            case 4 :
+                sleepTime = time / 4;
+                break;
+            case 5 :
+                sleepTime = time / 8;
+                break;
+            case 6 :
+                sleepTime = time ;
+                break;
+            case 7 :
+                sleepTime = time / 2;
+                break;
+            case 8 :
+                sleepTime = time / 4;
+                break;
+            case 9 :
+                sleepTime = time / 8;
+                break;
+        }
+        return sleepTime;
+    }
 
 
 

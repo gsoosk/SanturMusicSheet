@@ -119,6 +119,17 @@
                 android:layout_height="match_parent"
                 android:layout_weight="9" />
             <ImageButton
+                android:id="@+id/play_btn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="?android:selectableItemBackground"
+                android:padding="2dp"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/ic_play_button"
+                tools:ignore="VectorDrawableCompat" />
+            <ImageButton
                 android:id="@+id/undo_btn"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -129,6 +140,7 @@
                 android:scaleType="fitCenter"
                 app:srcCompat="@drawable/ic_undo_button"
                 tools:ignore="VectorDrawableCompat" />
+
 
 
         </LinearLayout>

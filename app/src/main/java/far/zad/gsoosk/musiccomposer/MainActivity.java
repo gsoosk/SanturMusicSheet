@@ -1,21 +1,25 @@
 package far.zad.gsoosk.musiccomposer;
 
+import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 
 import java.util.ArrayList;
 
 import far.zad.gsoosk.musiccomposer.Notes.Note;
 import far.zad.gsoosk.musiccomposer.Notes.NoteButton;
+import far.zad.gsoosk.musiccomposer.Stream.BluetoothActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private int[] mainSounds = new int[23];
     private int[] secondarySounds = new int[4];
     private int kookSound;
+    private boolean isPlaying = false;
+    private int time;
 
 
 
@@ -36,22 +42,31 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        Intent intent = new Intent(this, BluetoothActivity.class);
+//        startActivity(intent);
+//
 
         setNoteBarListener();
         addNoteLine();
         setInputViewNoteBase();
         handleUndoBtn();
         createSoundPool();
-
+        handlePlayBtn();
+        setBaseTime(96);
 
 
 
     }
 
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         sp.release();
+    }
+    public void setBaseTime(int x)
+    {
+        time = 1000 / 60 * x ;
     }
 
     public int dps(int x)
@@ -151,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
         {
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
                     .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                     .build();
 
             sp = new SoundPool.Builder()
@@ -197,7 +212,6 @@ public class MainActivity extends AppCompatActivity {
         kookSound = sp.load(getBaseContext(), R.raw.kook_kardan, 1);
         sp.play(kookSound, 1, 1, 0, 0, 1);
 
-
     }
     public void playNote(Note note)
     {
@@ -214,4 +228,67 @@ public class MainActivity extends AppCompatActivity {
         else
             sp.play(mainSounds[note.getNoteNumber()], 1, 1, 0, 0, 1);
     }
+    public void handlePlayBtn()
+    {
+        final ImageButton playBtn = (ImageButton) findViewById(R.id.play_btn);
+        playBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isPlaying = !isPlaying;
+                if(isPlaying)
+                {
+                    playBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_button));
+                    play();
+                }
+                else
+                {
+                    playBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_button));
+                }
+
+            }
+        });
+
+
+
+    }
+    public void play()
+    {
+        new Thread(new Runnable()
+        {
+            public void run()
+            {
+                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
+                for(int i = 0 ; i < notes.size() ; i++)
+                {
+                    if(!isPlaying)
+                        break;
+                    playNote(notes.get(i));
+                    (( LineView )linearLayout.getChildAt(i)).play();
+
+
+                    sendBTData(notes.get(i));
+
+                    try{
+                        Thread.sleep(notes.get(i).getSleepTime(time));
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                    (( LineView )linearLayout.getChildAt(i)).pause();
+                }
+                ImageButton playBtn = (ImageButton) findViewById(R.id.play_btn);
+                playBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_button));
+                isPlaying = false;
+
+
+            }
+        }).start();
+    }
+
+    public void sendBTData(Note note)
+    {
+
+    }
 }
+
