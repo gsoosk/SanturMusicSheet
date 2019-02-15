@@ -7,15 +7,20 @@ import android.media.SoundPool;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 import far.zad.gsoosk.musiccomposer.R;
 import far.zad.gsoosk.musiccomposer.Stream.BluetoothActivity;
+import far.zad.gsoosk.musiccomposer.Stream.BluetoothConnectionService;
 
 public class NoteActivity  extends AppCompatActivity {
 
@@ -51,6 +56,7 @@ public class NoteActivity  extends AppCompatActivity {
 
 
 
+
     }
 
 
@@ -62,6 +68,9 @@ public class NoteActivity  extends AppCompatActivity {
     public void setBaseTime(int x)
     {
         time = x ;
+        ImageView blueImg =(ImageView) findViewById(R.id.blue_image);
+        if(BluetoothConnectionService.getMainConnection() != null)
+            blueImg.setVisibility(View.VISIBLE);
     }
 
     public int dps(int x)
@@ -160,7 +169,7 @@ public class NoteActivity  extends AppCompatActivity {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
         {
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_GAME)
                     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                     .build();
 
@@ -284,6 +293,13 @@ public class NoteActivity  extends AppCompatActivity {
     public void sendBTData(Note note)
     {
 
+
+        if(BluetoothConnectionService.getMainConnection() != null)
+        {
+            BluetoothConnectionService bluetoothService = BluetoothConnectionService.getMainConnection();
+            String msg = note.getKind() + ":" + note.getNoteNumber() + ":" +  note.getKharak();
+            bluetoothService.write(msg.getBytes(Charset.defaultCharset()));
+        }
     }
 }
 

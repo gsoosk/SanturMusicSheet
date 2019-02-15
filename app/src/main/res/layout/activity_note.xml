@@ -110,13 +110,23 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="10">
-
+            <ImageView
+                android:id="@+id/blue_image"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:padding="2dp"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/ic_bluetooth"
+                tools:ignore="VectorDrawableCompat"
+                android:visibility="invisible"/>
 
 
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="9" />
+                android:layout_weight="8" />
             <ImageButton
                 android:id="@+id/play_btn"
                 android:layout_width="0dp"

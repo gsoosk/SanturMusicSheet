@@ -277,6 +277,7 @@ public class BluetoothConnectionService {
                 listener.onConnected(mContext);
                 mToast.setText("Connected to this device!");
                 mToast.show();
+                setThis();
             }
             else if(listener != null)
             {

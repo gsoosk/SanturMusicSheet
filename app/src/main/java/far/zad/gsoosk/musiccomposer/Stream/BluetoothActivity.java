@@ -263,6 +263,7 @@ public class BluetoothActivity extends AppCompatActivity {
             public void onConnected(Context context) {
                 Intent intent = new Intent(context, MainActivity.class);
                 startActivity(intent);
+                finish();
 
 
             }
