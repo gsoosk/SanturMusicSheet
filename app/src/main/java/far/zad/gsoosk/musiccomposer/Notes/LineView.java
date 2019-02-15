@@ -1,4 +1,4 @@
-package far.zad.gsoosk.musiccomposer;
+package far.zad.gsoosk.musiccomposer.Notes;
 
 import android.content.Context;
 import android.graphics.Bitmap;

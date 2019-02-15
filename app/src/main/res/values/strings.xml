@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">MusicComposer</string>
+    <string name="bluetooth_not_supported">This device does not support Bluetooth.</string>
+    <string name="search">Search Again !</string>
+    <string name="discovered">Discoverd Devices</string>
+    <string name="paired">Paired Devices</string>
+    <string name="cant_connect">Can not connect to this device. Please try again!</string>
 </resources>
