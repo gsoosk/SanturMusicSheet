@@ -47,7 +47,7 @@ public class NoteActivity  extends AppCompatActivity {
         handleUndoBtn();
         createSoundPool();
         handlePlayBtn();
-        setBaseTime(96);
+        setBaseTime(MetronomeActivity.miliTime);
 
 
 
@@ -61,7 +61,7 @@ public class NoteActivity  extends AppCompatActivity {
     }
     public void setBaseTime(int x)
     {
-        time = 1000 / 60 * x ;
+        time = x ;
     }
 
     public int dps(int x)
