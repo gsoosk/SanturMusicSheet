@@ -5,4 +5,7 @@
     <string name="discovered">Discoverd Devices</string>
     <string name="paired">Paired Devices</string>
     <string name="cant_connect">Can not connect to this device. Please try again!</string>
+    <string name="music_btn">Music Sheet</string>
+    <string name="blue_btn">Bluetooth Settings</string>
+    <string name="metronome">Metronome</string>
 </resources>

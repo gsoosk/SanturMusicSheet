@@ -13,7 +13,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Notes.NoteActivity"></activity>
+        <activity android:name=".Notes.MetronomeActivity"
+            android:screenOrientation="landscape"></activity>
+        <activity
+            android:name=".Notes.NoteActivity"
+            android:screenOrientation="landscape" />
         <activity
             android:name=".Stream.BluetoothActivity"
             android:screenOrientation="landscape" />

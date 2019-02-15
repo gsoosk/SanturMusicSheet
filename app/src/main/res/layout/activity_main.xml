@@ -9,160 +9,49 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="75dp"
-        tools:layout_editor_absoluteY="272dp">
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/note_bar"
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:srcCompat="@drawable/note_4_1"
+            android:layout_weight="4"
+            android:layout_gravity="right"/>
+
+        <View
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="10">
+            android:layout_height="0dp"
+            android:layout_weight="3"/>
+        <Button
+            android:id="@+id/music_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/music_btn"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+             />
 
-
-            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
-                android:id="@+id/bnote_0"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/note_0"
-                android:paddingTop="15dp"
-                android:paddingBottom="5dp"
-                />
-
-
-            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
-                android:id="@+id/bnote_1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/note_1_1"
-                android:padding="5dp"/>
-
-            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
-                android:id="@+id/bnote_2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/note_2_1"
-                android:padding="5dp"/>
-
-            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
-                android:id="@+id/bnote_3"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/note_3_1"
-                android:padding="5dp"/>
-
-            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
-                android:id="@+id/bnote_4"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/note_4_1"
-                android:padding="5dp"/>
-
-            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
-                android:id="@+id/bnote_5"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/note_5_1"
-                android:padding="5dp"/>
-
-            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
-                android:id="@+id/bsilent_0"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/silent_0"
-                android:padding="5dp"/>
-
-            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
-                android:id="@+id/bsilent_1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/silent_1"
-                android:padding="5dp"/>
-
-            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
-                android:id="@+id/bsilent_2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/silent_2"
-                android:padding="5dp"/>
-
-            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
-                android:id="@+id/bsilent_3"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/silent_3"
-                android:padding="5dp"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-
+        <Button
+            android:id="@+id/blue_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/blue_btn"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+             />
+        <Button
+            android:id="@+id/metronome_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/metronome"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            />
+        <View
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="10">
-
-
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="9" />
-            <ImageButton
-                android:id="@+id/play_btn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"
-                android:background="?android:selectableItemBackground"
-                android:padding="2dp"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/ic_play_button"
-                tools:ignore="VectorDrawableCompat" />
-            <ImageButton
-                android:id="@+id/undo_btn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"
-                android:background="?android:selectableItemBackground"
-                android:padding="2dp"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/ic_undo_button"
-                tools:ignore="VectorDrawableCompat" />
-
-
-
-        </LinearLayout>
-
-
-        <HorizontalScrollView
-            android:id="@+id/scroll"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:fillViewport="true">
-
-            <LinearLayout
-                android:id="@+id/s"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"></LinearLayout>
-        </HorizontalScrollView>
-
-
+            android:layout_height="0dp"
+            android:layout_weight="7"/>
     </LinearLayout>
-
-
 
 </android.support.constraint.ConstraintLayout>
