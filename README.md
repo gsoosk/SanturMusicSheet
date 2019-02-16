@@ -9,5 +9,7 @@ It also support some Santur IOT devices which will used for learning music and c
 * If you have a IOT Santur you can connect to it using bluetooth setting.
 * Metronome is for setting the main rythm timing in `BPM`
 * For making a new Music Sheet click on `MusicSheet` and make a new sheet. then you can `save` it and `load` it later. Here is a demo .
+
+
 ![MusicComposer](https://github.com/gsoosk/SanturMusicSheet/blob/master/demo.gif)
 
