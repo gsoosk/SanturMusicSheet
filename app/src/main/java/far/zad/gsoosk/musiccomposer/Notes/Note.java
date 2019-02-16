@@ -19,13 +19,11 @@ public class Note {
 
     private int noteNumber;
     private int kind;
-    private float x;
-    private float y;
+
     private int kharak = 0;
-    public Note(int _noteNumber, float _x, float _y, int _kind)
+    public Note(int _noteNumber, int _kind)
     {
-        x = _x;
-        y = _x;
+
         noteNumber = _noteNumber;
         kind = _kind;
     }

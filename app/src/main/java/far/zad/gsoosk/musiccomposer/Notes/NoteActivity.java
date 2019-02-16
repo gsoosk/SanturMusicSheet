@@ -1,10 +1,14 @@
 package far.zad.gsoosk.musiccomposer.Notes;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.net.Uri;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +19,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
@@ -45,7 +54,6 @@ public class NoteActivity  extends AppCompatActivity {
 
 
 
-
         setNoteBarListener();
         addNoteLine();
         setInputViewNoteBase();
@@ -53,6 +61,8 @@ public class NoteActivity  extends AppCompatActivity {
         createSoundPool();
         handlePlayBtn();
         setBaseTime(MetronomeActivity.miliTime);
+        handleSaveBtn();
+        handleLoadBtn();
 
 
 
@@ -300,6 +310,181 @@ public class NoteActivity  extends AppCompatActivity {
             String msg = note.getKind() + ":" + note.getNoteNumber() + ":" +  note.getKharak();
             bluetoothService.write(msg.getBytes(Charset.defaultCharset()));
         }
+    }
+    private static final int READ_REQUEST_CODE = 42;
+    private static final int WRITE_REQUEST_CODE = 43;
+
+    private void createFile( ) {
+        String fileName = "SanturData";
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        String mimeType = "text/plain";
+        intent.setType(mimeType);
+        intent.putExtra(Intent.EXTRA_TITLE, fileName);
+        startActivityForResult(intent, WRITE_REQUEST_CODE);
+    }
+
+    public void performFileSearch() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("text/plain");
+
+        startActivityForResult(intent, READ_REQUEST_CODE);
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode,
+                                 Intent resultData) {
+
+        if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            Uri uri = null;
+            if (resultData != null) {
+                uri = resultData.getData();
+                loadFile(uri);
+            }
+        }
+        if (requestCode == WRITE_REQUEST_CODE && resultCode == Activity.RESULT_OK)
+        {
+            Uri uri = null;
+            if (resultData != null) {
+                uri = resultData.getData();
+                saveFile(uri);
+            }
+        }
+    }
+    public void loadFile(Uri uri)
+    {
+        try {
+            ParcelFileDescriptor pfd = this.getContentResolver().
+                    openFileDescriptor(uri, "r");
+
+            FileInputStream fileInputStream =
+                    new FileInputStream(pfd.getFileDescriptor());
+            String data = "";
+            int content;
+            while ((content = fileInputStream.read()) != -1) {
+                // convert to char and display it
+                data += (char) content;
+            }
+
+            loadNotesViaData(data);
+            fileInputStream.close();
+            pfd.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void loadNotesViaData(String data)
+    {
+        String[] lines = data.split(System.getProperty("line.separator"));
+        if(lines[0].equals("SANTUR"))
+        {
+            notes = new ArrayList<>();
+            LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
+            linearLayout.removeAllViews();
+
+            for(int i = 1 ; i < lines.length ; i++)
+            {
+                String[] notesData = lines[i].split(":");
+
+
+                Note newNote = new Note(Integer.valueOf(notesData[1]),Integer.valueOf(notesData[0]));
+                newNote.setKharak(Integer.valueOf(notesData[2]));
+
+                notes.add(newNote);
+
+
+            }
+            addNotesView();
+        }
+        else
+        {
+            Toast.makeText(this, getResources().getString(R.string.not_support_file), Toast.LENGTH_LONG).show();
+        }
+    }
+    public void addNotesView()
+    {
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
+
+        for(int i = 0 ; i < notes.size(); i++)
+        {
+            final LineView newView = new LineView(getBaseContext());
+            newView.setNoteBase(notes.get(i).getKind());
+
+            linearLayout.addView(newView, new LinearLayout.LayoutParams(dps(YEK_LA_CHANG_WIDTH), LinearLayout.LayoutParams.MATCH_PARENT));
+
+            final LineView lastView = (LineView)  linearLayout.getChildAt(linearLayout.getChildCount());
+            final int index = i;
+            getWindow().getDecorView().post(new Runnable() {
+                @Override
+                public void run() {
+                    newView.addNewNote(notes.get(index).getNoteNumber());
+                    newView.setKharak(notes.get(index).getKharak());
+                    newView.postInvalidate();
+                    newView.setFromOutSide(true);
+                }
+            });
+//
+        }
+
+        addNoteLine();
+
+
+    }
+
+    public void saveFile(Uri uri)
+    {
+        try {
+            ParcelFileDescriptor pfd = this.getContentResolver().
+                    openFileDescriptor(uri, "w");
+
+            FileOutputStream fileOutputStream =
+                    new FileOutputStream(pfd.getFileDescriptor());
+
+            fileOutputStream.write((getNotesString()).getBytes());
+
+            fileOutputStream.close();
+            pfd.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+    public String getNotesString()
+    {
+        String output = "SANTUR\n";
+        for(int i = 0 ; i < notes.size() ; i++)
+        {
+            output += Integer.toString(notes.get(i).getKind()) + ":" + Integer.toString(notes.get(i).getNoteNumber() )+ ":" +
+                    Integer.toString(notes.get(i).getKharak()) + "\n";
+        }
+        return output;
+    }
+
+
+    public void handleSaveBtn()
+    {
+        ImageButton btn = (ImageButton) findViewById(R.id.save_btn);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createFile();
+            }
+        });
+    }
+    public void handleLoadBtn()
+    {
+        ImageButton btn = (ImageButton) findViewById(R.id.load_btn);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                performFileSearch();
+            }
+        });
     }
 }
 

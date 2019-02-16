@@ -37,6 +37,12 @@ public class LineView extends View {
     private boolean isNoteSelected = false;
     private int noteBase;
     private boolean playing = false;
+    private boolean fromOutSide = false;
+
+    public void setFromOutSide(boolean fromOutSide)
+    {
+        this.fromOutSide = fromOutSide;
+    }
 
     public void play()
     {
@@ -91,6 +97,8 @@ public class LineView extends View {
 
         drawLines(canvas);
 
+        if(fromOutSide)
+            drawNote(note);
 
         canvas.drawBitmap(bitmap, 0, 0, paint);
 
@@ -170,6 +178,11 @@ public class LineView extends View {
         }
 
     }
+    public void setKharak(int kharak)
+    {
+        note.setKharak(kharak);
+        invalidate();
+    }
     public void touchUp(float x, float y)
     {
         int noteNumber;
@@ -182,13 +195,13 @@ public class LineView extends View {
             noteNumber = 22;
         if(noteNumber <= 0)
             noteNumber = 0;
-        addNewNote(noteNumber, x, y);
+        addNewNote(noteNumber);
         previewRect = null;
 
     }
-    public void addNewNote(int noteNumber, float x, float y)
+    public void addNewNote(int noteNumber)
     {
-        note = new Note(noteNumber, x, y, noteBase);
+        note = new Note(noteNumber, noteBase);
         if(noteNumber == 15 || noteNumber == 8)
             note.setKharak(8);
         else if(noteNumber == 7 || noteNumber == 14)
@@ -201,6 +214,7 @@ public class LineView extends View {
             listener.onNoteAdded(note);
 
         Log.d("new Note : ", Integer.toString(noteNumber) + " " + Integer.toString(noteBase));
+
     }
     public void drawNote(Note note)
     {

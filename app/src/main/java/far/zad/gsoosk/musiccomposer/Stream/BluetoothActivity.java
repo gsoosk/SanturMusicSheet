@@ -280,8 +280,16 @@ public class BluetoothActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(receiver);
-        unregisterReceiver(pairingBroadcast);
+        try
+        {
+            unregisterReceiver(receiver);
+            unregisterReceiver(pairingBroadcast);
+        }
+        catch (IllegalArgumentException ignored)
+        {
+
+        }
+
     }
 
 }

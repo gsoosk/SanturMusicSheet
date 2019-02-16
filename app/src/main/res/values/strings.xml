@@ -9,4 +9,5 @@
     <string name="blue_btn">Bluetooth Settings</string>
     <string name="metronome">Metronome</string>
     <string name="set">Set</string>
+    <string name="not_support_file">This file does not supported.</string>
 </resources>
