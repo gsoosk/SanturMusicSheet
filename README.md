@@ -1,4 +1,4 @@
-# SanturMusicSheet 
+# SanturMusicSheet ![logo](http://198.143.182.134/Temp/icon.png)
 
 This is an android app for making Santur ( Iranian traditional instrument ) note sheets and play them with rythm. 
 
