@@ -29,6 +29,7 @@ public class MetronomeActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(), "Seted to " + Integer.toString(time), Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
