@@ -12,6 +12,7 @@ import android.os.ParcelFileDescriptor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
@@ -34,7 +35,7 @@ import far.zad.gsoosk.musiccomposer.Stream.BluetoothConnectionService;
 public class NoteActivity  extends AppCompatActivity {
 
     public static final int INITIAL_BUTTON = 2;
-    public static final int YEK_LA_CHANG_WIDTH = 100;
+    public static final int YEK_LA_CHANG_WIDTH = 140;
     private ArrayList<Note> notes  = new ArrayList<Note>();
     private NoteButton selectedBtn = null;
     private SoundPool sp;
@@ -98,25 +99,32 @@ public class NoteActivity  extends AppCompatActivity {
         newView.setNoteBase(selectedBtn.getIndex());
         linearLayout.addView(newView, new LinearLayout.LayoutParams(dps(YEK_LA_CHANG_WIDTH), LinearLayout.LayoutParams.MATCH_PARENT));
 
-
         newView.setLineViewListener(new LineView.LineViewListener() {
             @Override
-            public void onNoteAdded(Note note) {
-                notes.add(note);
-                addNoteLine();
+            public void onNoteAdded(Note note, boolean editing) {
 
                 playNote(note);
+                if(!editing)
+                {
+                    notes.add(note);
 
-                getWindow().getDecorView().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        scrollView.fullScroll(View.FOCUS_RIGHT);
-                    }
-                });
+                    addNoteLine();
+
+
+
+                    getWindow().getDecorView().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            scrollView.fullScroll(View.FOCUS_RIGHT);
+                        }
+                    });
+                }
+
             }
         });
 
     }
+
     public void setNoteBarListener()
     {
         LinearLayout noteBar = (LinearLayout) findViewById(R.id.note_bar);
@@ -229,6 +237,8 @@ public class NoteActivity  extends AppCompatActivity {
     }
     public void playNote(Note note)
     {
+        if(note == null)
+            return;
         if(note.getKind() >= 6 && note.getKind() <=  9)
             return ;
         if(note.getNoteNumber() == 7 && note.getKharak() == 9)
@@ -276,11 +286,15 @@ public class NoteActivity  extends AppCompatActivity {
                 {
                     if(!isPlaying)
                         break;
-                    playNote(notes.get(i));
+                    Note note = (( LineView )linearLayout.getChildAt(i)).note;
+                    if(note == null)
+                        continue;
+
+                    playNote(note);
                     (( LineView )linearLayout.getChildAt(i)).play();
 
 
-                    sendBTData(notes.get(i));
+                    sendBTData(note);
 
                     try{
                         Thread.sleep(notes.get(i).getSleepTime(time));
@@ -302,12 +316,12 @@ public class NoteActivity  extends AppCompatActivity {
 
     public void sendBTData(Note note)
     {
-
-
-        if(BluetoothConnectionService.getMainConnection() != null)
+        if(BluetoothConnectionService.getMainConnection() != null && note != null)
         {
             BluetoothConnectionService bluetoothService = BluetoothConnectionService.getMainConnection();
-            String msg = note.getKind() + ":" + note.getNoteNumber() + ":" +  note.getKharak();
+//            String msg = note.getKind() + ":" + note.getNoteNumber() + ":" +  note.getKharak();
+
+            String msg = "S110000";
             bluetoothService.write(msg.getBytes(Charset.defaultCharset()));
         }
     }

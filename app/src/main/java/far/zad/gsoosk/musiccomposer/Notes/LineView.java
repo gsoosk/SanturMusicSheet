@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Picture;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
@@ -23,21 +24,25 @@ import android.view.View;
 import java.util.ArrayList;
 
 import far.zad.gsoosk.musiccomposer.Notes.Note;
+import far.zad.gsoosk.musiccomposer.R;
 
 import static far.zad.gsoosk.musiccomposer.R.*;
 
 public class LineView extends View {
     private Paint paint = new Paint();
-    public static final int LINE_WIDTH = 5;
+    public static final int LINE_WIDTH = 8;
     private float noteHeight;
     private Bitmap bitmap ;
     private Canvas can;
-    private Note note = null;
+    public Note note = null;
     private Rect previewRect = null;
     private boolean isNoteSelected = false;
     private int noteBase;
     private boolean playing = false;
     private boolean fromOutSide = false;
+    private float baseHeight;
+    private float width ;
+    private boolean editing = false;
 
     public void setFromOutSide(boolean fromOutSide)
     {
@@ -55,6 +60,10 @@ public class LineView extends View {
         invalidate();
     }
 
+    public Note getNote() {
+        return note;
+    }
+
     public void setNoteBase(int noteBase) {
         this.noteBase = noteBase;
     }
@@ -62,7 +71,7 @@ public class LineView extends View {
     //Note Listener
     public interface LineViewListener
     {
-        public void onNoteAdded(Note note);
+        public void onNoteAdded(Note note, boolean editing);
     }
     private LineViewListener listener;
     public void setLineViewListener(LineViewListener l)
@@ -92,7 +101,10 @@ public class LineView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
-        float height = canvas.getHeight() / 24;
+        baseHeight = canvas.getHeight() / 12;
+        width = canvas.getWidth();
+
+        float height = ( canvas.getHeight() - baseHeight ) / 24;
         noteHeight = height;
 
         drawLines(canvas);
@@ -104,6 +116,10 @@ public class LineView extends View {
 
         drawKharakNumber(canvas);
 
+        drawHand(canvas);
+
+        drawEditBtn(canvas);
+
         paint.setColor(getResources().getColor(color.note_prev));
         if(previewRect != null)
             canvas.drawRect(previewRect, paint);
@@ -111,9 +127,33 @@ public class LineView extends View {
 
         if(playing) {
             paint.setColor(getResources().getColor(color.playing));
-            canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), paint);
+            canvas.drawRect(0, 0, canvas.getWidth(), ( canvas.getHeight()), paint);
         }
 
+    }
+    public void drawHand(Canvas canvas)
+    {
+        if(note != null)
+        {
+            paint.setColor(getResources().getColor(color.secondary_line_color));
+            canvas.drawLine(canvas.getWidth(), 0, canvas.getWidth(), (int) baseHeight, paint);
+            Drawable handPic = note.getHand() == 1 ? getResources().getDrawable(drawable.ic_hand_rast) :
+                    getResources().getDrawable(drawable.ic_hand_chap);
+            handPic.setBounds(canvas.getWidth() / 2 + (canvas.getWidth()/2) / 3 , (int ) baseHeight * 10 / 100, canvas.getWidth() / 2 + canvas.getWidth()/2 * 2 / 3, (int) baseHeight * 90 / 100);
+            handPic.draw(canvas);
+        }
+
+    }
+
+    public void drawEditBtn(Canvas canvas)
+    {
+        if(note != null)
+        {
+            canvas.drawLine(0, 0, 0, (int) baseHeight, paint);
+            Drawable handPic = getResources().getDrawable(drawable.ic_note_interface_symbol) ;
+            handPic.setBounds( (canvas.getWidth()/2) / 3 , (int ) baseHeight * 10 / 100, canvas.getWidth()/2 * 2 / 3, (int) baseHeight * 90 / 100);
+            handPic.draw(canvas);
+        }
     }
 
     public void drawKharakNumber(Canvas can)
@@ -122,7 +162,7 @@ public class LineView extends View {
             if (note.getNoteNumber() == 7 || note.getNoteNumber() == 8 || note.getNoteNumber() == 14 || note.getNoteNumber() == 15) {
                 paint.setTextSize(60);
                 paint.setColor(getResources().getColor(color.main_line_color));
-                can.drawText(Integer.toString(note.getKharak()), can.getWidth() / 2, noteHeight * 3 / 2, paint);
+                can.drawText(Integer.toString(note.getKharak()), can.getWidth() / 2, baseHeight + noteHeight * 3 / 2, paint);
             }
         }
 
@@ -141,6 +181,30 @@ public class LineView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
+        if(isNoteSelected && y < baseHeight)
+        {
+            if(event.getAction() == MotionEvent.ACTION_UP)
+            {
+                if(x > width/2)
+                {
+                    note.changeHand();
+                    invalidate();
+                    return true;
+                }
+                else
+                {
+                    note = null;
+                    isNoteSelected = false;
+                    can.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+                    editing = true;
+                    invalidate();
+                    return true;
+                }
+
+            }
+        }
+        y = y - baseHeight;
+
         if(!isNoteSelected) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -211,7 +275,7 @@ public class LineView extends View {
 
         isNoteSelected = true;
         if(listener != null)
-            listener.onNoteAdded(note);
+            listener.onNoteAdded(note, editing);
 
         Log.d("new Note : ", Integer.toString(noteNumber) + " " + Integer.toString(noteBase));
 
@@ -232,7 +296,7 @@ public class LineView extends View {
     public void drawNote_0(Note note)
     {
         Drawable notePic = getResources().getDrawable(drawable.note_0);
-        float y = note.getNoteNumber() * noteHeight;
+        float y = baseHeight + (note.getNoteNumber() * noteHeight);
         float note0Width = Note.NOTE_0_WIDTH_ON_HEIGHT(noteHeight );
         Log.d("Height", Float.toString(noteHeight * 2));
         Log.d("Height", Float.toString(note0Width));
@@ -272,7 +336,7 @@ public class LineView extends View {
     public void drawNote1Up(Note note, Drawable notePic)
     {
 
-        float y = note.getNoteNumber() * noteHeight + 2*noteHeight;
+        float y = baseHeight + note.getNoteNumber() * noteHeight + 2*noteHeight;
         float note1Height = Note.NOTE_1_HEIGHT_ON_HEAD(noteHeight * 2 );
         float note1Width = Note.NOTE_1_WIDTH_ON_HEIGHT(note1Height/2);
         notePic.setBounds((int) (can.getWidth() / 2 -  note1Width),  (int) (y - note1Height),
@@ -281,7 +345,7 @@ public class LineView extends View {
     }
     public void drawNote1Down(Note note, Drawable notePic)
     {
-        float y = note.getNoteNumber() * noteHeight ;
+        float y = baseHeight+ note.getNoteNumber() * noteHeight ;
         float note1Height = Note.NOTE_1_HEIGHT_ON_HEAD(noteHeight * 2 );
         float note1Width = Note.NOTE_1_WIDTH_ON_HEIGHT(note1Height/2);
         notePic.setBounds((int) (can.getWidth() / 2 -  note1Width),  (int) (y),
@@ -317,7 +381,7 @@ public class LineView extends View {
     }
     public void drawNote_3to5Up(Note note, Drawable notePic)
     {
-        float y = note.getNoteNumber() * noteHeight + 2*noteHeight;
+        float y = baseHeight + note.getNoteNumber() * noteHeight + 2*noteHeight;
         float note1Height = Note.NOTE_3_HEIGHT_ON_HEAD(noteHeight * 2 );
         float note1Width = Note.NOTE_3_WIDTH_ON_HEIGHT(note1Height/2);
 
@@ -327,7 +391,7 @@ public class LineView extends View {
     }
     public void drawNote_3to5Down(Note note, Drawable notePic)
     {
-        float y = note.getNoteNumber() * noteHeight ;
+        float y = baseHeight + note.getNoteNumber() * noteHeight ;
         float note1Height = Note.NOTE_3_HEIGHT_ON_HEAD_DOWN(noteHeight * 2 );
         float note1Width = Note.NOTE_3_WIDTH_ON_HEIGHT_DOWN(note1Height/2);
         notePic.setBounds((int) (can.getWidth() / 2 -  note1Width),  (int) (y),
@@ -357,7 +421,7 @@ public class LineView extends View {
     }
     public void drawSilentNote(Drawable notePic)
     {
-        float height =  7 * noteHeight / 2;
+        float height =   baseHeight + 7 * noteHeight / 2;
         float width = Note.SILENT_NOTE_WIDTH_ON_HEIGHT(height);
 
         notePic.setBounds((int) (can.getWidth() / 2 -  width),  (int) (can.getHeight() / 2 - height),
@@ -367,7 +431,7 @@ public class LineView extends View {
     public void drawLines(Canvas canvas)
     {
         float height = noteHeight;
-        float x = height + height / 2;
+        float x = baseHeight +  height + height / 2;
         paint.setStrokeWidth(LINE_WIDTH);
         for(int i = 0 ; i < 11 ; i++)
         {
@@ -394,7 +458,7 @@ public class LineView extends View {
         if(noteNumber >= 23)
             noteNumber = 22;
         previewRect = new Rect();
-        int  height = (int) (( noteNumber * noteHeight) + (noteHeight / 2));
+        int  height = (int) (baseHeight + ( noteNumber * noteHeight) + (noteHeight / 2));
         previewRect.set(0, height - (int) noteHeight / 2,  can.getWidth(), height + (int) noteHeight * 3/2);
     }
 

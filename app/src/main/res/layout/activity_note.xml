@@ -17,7 +17,7 @@
             android:id="@+id/note_bar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="10">
+            android:layout_weight="8">
 
 
             <far.zad.gsoosk.musiccomposer.Notes.NoteButton
@@ -109,7 +109,7 @@
 
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="10">
+            android:layout_weight="8">
             <ImageView
                 android:id="@+id/blue_image"
                 android:layout_width="0dp"
@@ -178,6 +178,18 @@
 
         </LinearLayout>
 
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:id="@+id/hand_s"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"></LinearLayout>
+        </HorizontalScrollView>
 
         <HorizontalScrollView
             android:id="@+id/scroll"

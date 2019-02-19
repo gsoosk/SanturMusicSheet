@@ -19,14 +19,33 @@ public class Note {
 
     private int noteNumber;
     private int kind;
+    private int hand;
+    private static int globalHand = 1;
 
+
+
+    public void changeHand()
+    {
+        hand = hand == 1 ? 2 : 1;
+    }
     private int kharak = 0;
     public Note(int _noteNumber, int _kind)
     {
 
         noteNumber = _noteNumber;
         kind = _kind;
+        hand = globalHand;
+
+        if(globalHand == 1)
+            globalHand = 2;
+        else
+            globalHand = 1;
     }
+
+    public int getHand() {
+        return hand;
+    }
+
     public int getNoteNumber()
     {
         return noteNumber;
