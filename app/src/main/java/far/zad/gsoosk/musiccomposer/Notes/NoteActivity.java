@@ -107,11 +107,7 @@ public class NoteActivity  extends AppCompatActivity {
                 if(!editing)
                 {
                     notes.add(note);
-
                     addNoteLine();
-
-
-
                     getWindow().getDecorView().post(new Runnable() {
                         @Override
                         public void run() {
@@ -282,11 +278,13 @@ public class NoteActivity  extends AppCompatActivity {
             public void run()
             {
                 LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
+                boolean twoHand = false;
                 for(int i = 0 ; i < notes.size() ; i++)
                 {
                     if(!isPlaying)
                         break;
                     Note note = (( LineView )linearLayout.getChildAt(i)).note;
+
                     if(note == null)
                         continue;
 
@@ -296,6 +294,11 @@ public class NoteActivity  extends AppCompatActivity {
 
                     sendBTData(note);
 
+                    if(note.isWithTwoHand() && !twoHand) {
+                        twoHand = true;
+                        continue;
+                    }
+
                     try{
                         Thread.sleep(notes.get(i).getSleepTime(time));
                     }
@@ -304,6 +307,12 @@ public class NoteActivity  extends AppCompatActivity {
 
                     }
                     (( LineView )linearLayout.getChildAt(i)).pause();
+                    if(twoHand)
+                    {
+                        twoHand = false;
+                        (( LineView )linearLayout.getChildAt(i-1)).pause();
+                    }
+
                 }
                 ImageButton playBtn = (ImageButton) findViewById(R.id.play_btn);
                 playBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_button));

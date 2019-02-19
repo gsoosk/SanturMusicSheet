@@ -21,6 +21,7 @@ public class Note {
     private int kind;
     private int hand;
     private static int globalHand = 1;
+    private boolean withTwoHand;
 
 
 
@@ -40,6 +41,17 @@ public class Note {
             globalHand = 2;
         else
             globalHand = 1;
+
+        withTwoHand = false;
+    }
+
+    public void changeTwoHand()
+    {
+        withTwoHand = !withTwoHand;
+    }
+
+    public boolean isWithTwoHand() {
+        return withTwoHand;
     }
 
     public int getHand() {

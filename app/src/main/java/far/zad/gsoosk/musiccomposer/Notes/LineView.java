@@ -101,7 +101,7 @@ public class LineView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
-        baseHeight = canvas.getHeight() / 12;
+        baseHeight = canvas.getHeight() / 6;
         width = canvas.getWidth();
 
         float height = ( canvas.getHeight() - baseHeight ) / 24;
@@ -120,6 +120,8 @@ public class LineView extends View {
 
         drawEditBtn(canvas);
 
+        drawTwoHandBox(canvas);
+
         paint.setColor(getResources().getColor(color.note_prev));
         if(previewRect != null)
             canvas.drawRect(previewRect, paint);
@@ -136,22 +138,32 @@ public class LineView extends View {
         if(note != null)
         {
             paint.setColor(getResources().getColor(color.secondary_line_color));
-            canvas.drawLine(canvas.getWidth(), 0, canvas.getWidth(), (int) baseHeight, paint);
+            canvas.drawLine(canvas.getWidth(), baseHeight / 2, canvas.getWidth(), (int) baseHeight, paint);
             Drawable handPic = note.getHand() == 1 ? getResources().getDrawable(drawable.ic_hand_rast) :
                     getResources().getDrawable(drawable.ic_hand_chap);
-            handPic.setBounds(canvas.getWidth() / 2 + (canvas.getWidth()/2) / 3 , (int ) baseHeight * 10 / 100, canvas.getWidth() / 2 + canvas.getWidth()/2 * 2 / 3, (int) baseHeight * 90 / 100);
+            handPic.setBounds(canvas.getWidth() / 2 + (canvas.getWidth()/2) / 3 , (int) (baseHeight / 2 + baseHeight/2 * 10 / 100),
+                    canvas.getWidth() / 2 + canvas.getWidth()/2 * 2 / 3, (int) (baseHeight / 2 + baseHeight/2 * 90 / 100));
             handPic.draw(canvas);
         }
 
+    }
+    public void drawTwoHandBox(Canvas canvas)
+    {
+        if(note != null && note.isWithTwoHand())
+        {
+            paint.setColor(getResources().getColor(color.two_hands));
+            canvas.drawRect(0, 0, canvas.getWidth(), baseHeight/2 * 90/100, paint);
+        }
     }
 
     public void drawEditBtn(Canvas canvas)
     {
         if(note != null)
         {
-            canvas.drawLine(0, 0, 0, (int) baseHeight, paint);
+            canvas.drawLine(0, baseHeight / 2, 0, (int) baseHeight, paint);
             Drawable handPic = getResources().getDrawable(drawable.ic_note_interface_symbol) ;
-            handPic.setBounds( (canvas.getWidth()/2) / 3 , (int ) baseHeight * 10 / 100, canvas.getWidth()/2 * 2 / 3, (int) baseHeight * 90 / 100);
+            handPic.setBounds( (canvas.getWidth()/2) / 3 ,  (int) (baseHeight / 2 + baseHeight/2 * 10 / 100),
+                    canvas.getWidth()/2 * 2 / 3,  (int) (baseHeight / 2 + baseHeight/2 * 90 / 100));
             handPic.draw(canvas);
         }
     }
@@ -181,48 +193,63 @@ public class LineView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
-        if(isNoteSelected && y < baseHeight)
+        if(isNoteSelected)
         {
-            if(event.getAction() == MotionEvent.ACTION_UP)
+            if(y < baseHeight / 2)
             {
-                if(x > width/2)
+                if(event.getAction() == MotionEvent.ACTION_UP)
                 {
-                    note.changeHand();
+                    note.changeTwoHand();
                     invalidate();
                     return true;
                 }
-                else
-                {
-                    note = null;
-                    isNoteSelected = false;
-                    can.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-                    editing = true;
-                    invalidate();
-                    return true;
-                }
-
             }
+            else if(y < baseHeight)
+            {
+                if(event.getAction() == MotionEvent.ACTION_UP)
+                {
+                    if(x > width/2)
+                    {
+                        note.changeHand();
+                        invalidate();
+                        return true;
+                    }
+                    else
+                    {
+                        note = null;
+                        isNoteSelected = false;
+                        can.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+                        editing = true;
+                        invalidate();
+                        return true;
+                    }
+
+                }
+            }
+
         }
         y = y - baseHeight;
 
         if(!isNoteSelected) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    touch(x, y);
-                    invalidate();
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    touch(x, y);
-                    invalidate();
-                    break;
-                case MotionEvent.ACTION_UP:
-                    touchUp(x, y);
-                    invalidate();
-                    break;
-                case MotionEvent.ACTION_CANCEL:
-                    previewRect = null;
-                    invalidate();
-                    break;
+            if(y > 0) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        touch(x, y);
+                        invalidate();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        touch(x, y);
+                        invalidate();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        touchUp(x, y);
+                        invalidate();
+                        break;
+                    case MotionEvent.ACTION_CANCEL:
+                        previewRect = null;
+                        invalidate();
+                        break;
+                }
             }
         } else if(note.getNoteNumber() == 7 || note.getNoteNumber() == 8 || note.getNoteNumber() == 14 || note.getNoteNumber() == 15)
         {
