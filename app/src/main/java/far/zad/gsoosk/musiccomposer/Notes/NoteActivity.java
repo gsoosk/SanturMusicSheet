@@ -1,14 +1,17 @@
 package far.zad.gsoosk.musiccomposer.Notes;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
+import android.provider.OpenableColumns;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -518,8 +522,25 @@ public class NoteActivity  extends AppCompatActivity {
             if (resultData != null) {
                 uri = resultData.getData();
                 saveFile(uri);
+
             }
         }
+        if(resultCode == Activity.RESULT_OK)
+        {
+            String filename = queryName(getContentResolver(), resultData.getData());
+            TextView textView = findViewById(R.id.file_name_text);
+            textView.setText(filename);
+        }
+    }
+    private String queryName(ContentResolver resolver, Uri uri) {
+        Cursor returnCursor =
+                resolver.query(uri, null, null, null, null);
+        assert returnCursor != null;
+        int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+        returnCursor.moveToFirst();
+        String name = returnCursor.getString(nameIndex);
+        returnCursor.close();
+        return name;
     }
     public void loadFile(Uri uri)
     {
@@ -612,7 +633,6 @@ public class NoteActivity  extends AppCompatActivity {
         try {
             ParcelFileDescriptor pfd = this.getContentResolver().
                     openFileDescriptor(uri, "w");
-
             FileOutputStream fileOutputStream =
                     new FileOutputStream(pfd.getFileDescriptor());
 
