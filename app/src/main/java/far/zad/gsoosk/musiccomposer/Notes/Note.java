@@ -50,6 +50,14 @@ public class Note {
         withTwoHand = !withTwoHand;
     }
 
+    public void setHand(int hand) {
+        this.hand = hand;
+    }
+
+    public void setWithTwoHand(boolean withTwoHand) {
+        this.withTwoHand = withTwoHand;
+    }
+
     public boolean isWithTwoHand() {
         return withTwoHand;
     }

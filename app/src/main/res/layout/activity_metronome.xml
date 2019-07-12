@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Notes.MetronomeActivity">
+    tools:context=".Notes.MetronomeActivity"
+    android:background="@drawable/back">
 
     <EditText
         android:id="@+id/number"
@@ -16,6 +17,7 @@
         android:layout_marginBottom="8dp"
         android:ems="10"
         android:inputType="number"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.41"
@@ -50,6 +52,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="BPM"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -70,6 +73,6 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/note_2_1" />
+        app:srcCompat="@drawable/white_note" />
 
 </android.support.constraint.ConstraintLayout>

@@ -10,4 +10,8 @@
     <string name="metronome">Metronome</string>
     <string name="set">Set</string>
     <string name="not_support_file">This file does not supported.</string>
+    <string name="about_btn">About</string>
+    <string name="music_sheet">Music Sheet</string>
+    <string name="blutooth_setting">Bluetooth Setting</string>
+    <string name="about">An about text for music sheet</string>
 </resources>

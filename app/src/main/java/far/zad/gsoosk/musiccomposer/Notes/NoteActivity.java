@@ -18,6 +18,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import java.io.File;
@@ -53,8 +54,6 @@ public class NoteActivity  extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
 
-
-
         setNoteBarListener();
         addNoteLine();
         setInputViewNoteBase();
@@ -64,9 +63,6 @@ public class NoteActivity  extends AppCompatActivity {
         setBaseTime(MetronomeActivity.miliTime);
         handleSaveBtn();
         handleLoadBtn();
-
-
-
 
     }
 
@@ -158,8 +154,13 @@ public class NoteActivity  extends AppCompatActivity {
     public void setInputViewNoteBase()
     {
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
-        LineView view = (LineView) linearLayout.getChildAt(linearLayout.getChildCount() - 1);
-        view.setNoteBase(selectedBtn.getIndex());
+        for(int i = 0 ; i < linearLayout.getChildCount(); i++)
+        {
+            LineView view = (LineView) linearLayout.getChildAt(i);
+            if(view.editing || !view.isNoteSelected)
+                view.setNoteBase(selectedBtn.getIndex());
+        }
+
     }
     public void handleUndoBtn()
     {
@@ -292,13 +293,23 @@ public class NoteActivity  extends AppCompatActivity {
                     (( LineView )linearLayout.getChildAt(i)).play();
 
 
-                    sendBTData(note);
+
 
                     if(note.isWithTwoHand() && !twoHand) {
                         twoHand = true;
                         continue;
                     }
+                    else if(!twoHand)
+                        sendBTData(note);
 
+                    boolean pause = false;
+                    if(twoHand)
+                    {
+                        twoHand = false;
+                        Note note2 = (( LineView )linearLayout.getChildAt(i-1)).note;
+                        sendBTDataTwoHands(note2, note);
+                        pause = true;
+                    }
                     try{
                         Thread.sleep(notes.get(i).getSleepTime(time));
                     }
@@ -307,9 +318,8 @@ public class NoteActivity  extends AppCompatActivity {
 
                     }
                     (( LineView )linearLayout.getChildAt(i)).pause();
-                    if(twoHand)
+                    if(pause)
                     {
-                        twoHand = false;
                         (( LineView )linearLayout.getChildAt(i-1)).pause();
                     }
 
@@ -325,15 +335,151 @@ public class NoteActivity  extends AppCompatActivity {
 
     public void sendBTData(Note note)
     {
-        if(BluetoothConnectionService.getMainConnection() != null && note != null)
+        if(BluetoothConnectionService.getMainConnection() != null && note != null && note.getKind() < 6)
         {
             BluetoothConnectionService bluetoothService = BluetoothConnectionService.getMainConnection();
-//            String msg = note.getKind() + ":" + note.getNoteNumber() + ":" +  note.getKharak();
-
-            String msg = "S110000";
+            String msg = "S";
+            String noteMsg = getNoteCode(note);
+            if(note.getHand() == 1)
+                msg += noteMsg + "0000";
+            else
+                msg += "00" + noteMsg + "00";
             bluetoothService.write(msg.getBytes(Charset.defaultCharset()));
         }
     }
+    public void sendBTDataTwoHands(Note note1, Note note2)
+    {
+        if(BluetoothConnectionService.getMainConnection() != null && note1 != null && note2 != null && note1.getKind() < 6 )
+        {
+            BluetoothConnectionService bluetoothService = BluetoothConnectionService.getMainConnection();
+            String msg = "S";
+            if(note1.getHand() == 1)
+                msg += getNoteCode(note1) + getNoteCode(note2) + "00";
+            else
+                msg += getNoteCode(note2) + getNoteCode(note1) + "00";
+
+            bluetoothService.write(msg.getBytes(Charset.defaultCharset()));
+        }
+    }
+    public String getNoteCode(Note note)
+    {
+        int noteNumber = note.getNoteNumber();
+        int noteKharak = note.getKharak();
+        int noteHand = note.getHand();
+        if(noteNumber == 0 && noteHand == 1)
+            return "95";
+        else if(noteNumber == 0 && noteHand == 2)
+            return "96";
+        else if(noteNumber == 1 && noteHand == 1)
+            return "85";
+        else if(noteNumber == 1 && noteHand == 2)
+            return "86";
+        else if(noteNumber == 2 && noteHand == 1)
+            return "75";
+        else if(noteNumber == 2 && noteHand == 2)
+            return "76";
+        else if(noteNumber == 3 && noteHand == 1)
+            return "65";
+        else if(noteNumber == 3 && noteHand == 2)
+            return "66";
+        else if(noteNumber == 4 && noteHand == 1)
+            return "55";
+        else if(noteNumber == 4 && noteHand == 2)
+            return "56";
+        else if(noteNumber == 5 && noteHand == 1)
+            return "45";
+        else if(noteNumber == 5 && noteHand == 2)
+            return "46";
+        else if(noteNumber == 6 && noteHand == 1)
+            return "35";
+        else if(noteNumber == 6 && noteHand == 2)
+            return "36";
+        else if(noteNumber == 7 && noteHand == 1 && noteKharak == 2)
+            return "25";
+        else if(noteNumber == 7 && noteHand == 2 && noteKharak == 2)
+            return "26";
+        else if(noteNumber == 8 && noteHand == 1 && noteKharak == 1)
+            return "15";
+        else if(noteNumber == 8 && noteHand == 2 && noteKharak == 1)
+            return "16";
+        else if(noteNumber == 7 && noteHand == 1 && noteKharak == 9)
+            return "93";
+        else if(noteNumber == 7 && noteHand == 2 && noteKharak == 9)
+            return "94";
+        else if(noteNumber == 8 && noteHand == 1 && noteKharak == 8)
+            return "83";
+        else if(noteNumber == 8 && noteHand == 2 && noteKharak == 8)
+            return "84";
+        else if(noteNumber == 9 && noteHand == 1)
+            return "73";
+        else if(noteNumber == 9 && noteHand == 2)
+            return "74";
+        else if(noteNumber == 10 && noteHand == 1)
+            return "63";
+        else if(noteNumber == 10 && noteHand == 2)
+            return "64";
+        else if(noteNumber == 11 && noteHand == 1)
+            return "53";
+        else if(noteNumber == 11 && noteHand == 2)
+            return "54";
+        else if(noteNumber == 12 && noteHand == 1)
+            return "43";
+        else if(noteNumber == 12 && noteHand == 2)
+            return "44";
+        else if(noteNumber == 13 && noteHand == 1)
+            return "33";
+        else if(noteNumber == 13 && noteHand == 2)
+            return "34";
+        else if(noteNumber == 14 && noteHand == 1 && noteKharak == 2)
+            return "23";
+        else if(noteNumber == 14 && noteHand == 2 && noteKharak == 2)
+            return "24";
+        else if(noteNumber == 15 && noteHand == 1 && noteKharak == 1)
+            return "13";
+        else if(noteNumber == 15 && noteHand == 2 && noteKharak == 1)
+            return "14";
+        else if(noteNumber == 14 && noteHand == 1 && noteKharak == 9)
+            return "91";
+        else if(noteNumber == 14 && noteHand == 2 && noteKharak == 9)
+            return "92";
+        else if(noteNumber == 15 && noteHand == 1 && noteKharak == 8)
+            return "81";
+        else if(noteNumber == 15 && noteHand == 2 && noteKharak == 8)
+            return "82";
+        else if(noteNumber == 16 && noteHand == 1)
+            return "71";
+        else if(noteNumber == 16 && noteHand == 2)
+            return "72";
+        else if(noteNumber == 17 && noteHand == 1)
+            return "61";
+        else if(noteNumber == 17 && noteHand == 2)
+            return "62";
+        else if(noteNumber == 18 && noteHand == 1)
+            return "51";
+        else if(noteNumber == 18 && noteHand == 2)
+            return "52";
+        else if(noteNumber == 19 && noteHand == 1)
+            return "41";
+        else if(noteNumber == 19 && noteHand == 2)
+            return "42";
+        else if(noteNumber == 20 && noteHand == 1)
+            return "31";
+        else if(noteNumber == 20 && noteHand == 2)
+            return "32";
+        else if(noteNumber == 21 && noteHand == 1)
+            return "21";
+        else if(noteNumber == 21 && noteHand == 2)
+            return "22";
+        else if(noteNumber == 22 && noteHand == 1)
+            return "11";
+        else if(noteNumber == 22 && noteHand == 2)
+            return "12";
+
+        return "";
+
+
+    }
+
     private static final int READ_REQUEST_CODE = 42;
     private static final int WRITE_REQUEST_CODE = 43;
 
@@ -415,6 +561,9 @@ public class NoteActivity  extends AppCompatActivity {
 
                 Note newNote = new Note(Integer.valueOf(notesData[1]),Integer.valueOf(notesData[0]));
                 newNote.setKharak(Integer.valueOf(notesData[2]));
+                newNote.setHand(Integer.valueOf(notesData[3]));
+                newNote.setWithTwoHand(Integer.valueOf(notesData[4]) == 1);
+
 
                 notes.add(newNote);
 
@@ -445,6 +594,7 @@ public class NoteActivity  extends AppCompatActivity {
                 public void run() {
                     newView.addNewNote(notes.get(index).getNoteNumber());
                     newView.setKharak(notes.get(index).getKharak());
+                    newView.setHand(notes.get(index).getHand(), notes.get(index).isWithTwoHand());
                     newView.postInvalidate();
                     newView.setFromOutSide(true);
                 }
@@ -480,10 +630,14 @@ public class NoteActivity  extends AppCompatActivity {
     public String getNotesString()
     {
         String output = "SANTUR\n";
+
         for(int i = 0 ; i < notes.size() ; i++)
         {
-            output += Integer.toString(notes.get(i).getKind()) + ":" + Integer.toString(notes.get(i).getNoteNumber() )+ ":" +
-                    Integer.toString(notes.get(i).getKharak()) + "\n";
+            LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
+            Note note = ((LineView)linearLayout.getChildAt(i)).note;
+            if(note != null)
+                output += Integer.toString(note.getKind()) + ":" + Integer.toString(note.getNoteNumber() )+ ":" +
+                    Integer.toString(note.getKharak()) + ":" + Integer.toString(note.getHand())+ ":" + Integer.toString(note.isWithTwoHand() ? 1 : 0) +  "\n";
         }
         return output;
     }
@@ -495,6 +649,7 @@ public class NoteActivity  extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                for
                 createFile();
             }
         });

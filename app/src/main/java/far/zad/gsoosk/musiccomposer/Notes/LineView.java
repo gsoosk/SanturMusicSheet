@@ -36,13 +36,13 @@ public class LineView extends View {
     private Canvas can;
     public Note note = null;
     private Rect previewRect = null;
-    private boolean isNoteSelected = false;
+    public boolean isNoteSelected = false;
     private int noteBase;
     private boolean playing = false;
     private boolean fromOutSide = false;
     private float baseHeight;
     private float width ;
-    private boolean editing = false;
+    public boolean editing = false;
 
     public void setFromOutSide(boolean fromOutSide)
     {
@@ -66,6 +66,11 @@ public class LineView extends View {
 
     public void setNoteBase(int noteBase) {
         this.noteBase = noteBase;
+    }
+    public void setHand(int hand, boolean withTwo)
+    {
+        note.setHand(hand);
+        note.setWithTwoHand(withTwo);
     }
 
     //Note Listener
@@ -292,6 +297,7 @@ public class LineView extends View {
     }
     public void addNewNote(int noteNumber)
     {
+
         note = new Note(noteNumber, noteBase);
         if(noteNumber == 15 || noteNumber == 8)
             note.setKharak(8);
@@ -303,12 +309,15 @@ public class LineView extends View {
         isNoteSelected = true;
         if(listener != null)
             listener.onNoteAdded(note, editing);
+        editing = false;
 
         Log.d("new Note : ", Integer.toString(noteNumber) + " " + Integer.toString(noteBase));
 
     }
     public void drawNote(Note note)
     {
+        if(note == null)
+            return;
         if(note.getKind() == 0)
             drawNote_0(note);
         else if(note.getKind() == 1 || note.getKind() == 2)
@@ -448,11 +457,11 @@ public class LineView extends View {
     }
     public void drawSilentNote(Drawable notePic)
     {
-        float height =   baseHeight + 7 * noteHeight / 2;
+        float height =  7 * noteHeight / 2;
         float width = Note.SILENT_NOTE_WIDTH_ON_HEIGHT(height);
 
-        notePic.setBounds((int) (can.getWidth() / 2 -  width),  (int) (can.getHeight() / 2 - height),
-                (int) (can.getWidth() / 2 + width),  (int) (can.getHeight() / 2 + height));
+        notePic.setBounds((int) (can.getWidth() / 2 -  width),  (int) (can.getHeight() / 2 - height - baseHeight / 2),
+                (int) (can.getWidth() / 2 + width),  (int) (  can.getHeight() / 2 + height - baseHeight / 2));
         notePic.draw(can);
     }
     public void drawLines(Canvas canvas)

@@ -9,5 +9,5 @@
     <color name="btn_selected">#79FF4A4A</color>
     <color name="playing">#3662FF69</color>
     <color name="two_hands">#5593C2</color>
-
+    <color name="white">#FFFF</color>
 </resources>

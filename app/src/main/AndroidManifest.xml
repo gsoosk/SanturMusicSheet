@@ -6,9 +6,6 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-
-
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_icon"
@@ -16,13 +13,14 @@
         android:roundIcon="@drawable/ic_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Notes.MetronomeActivity"
+        <activity android:name=".AboutActivity"
             android:screenOrientation="landscape"></activity>
         <activity
+            android:name=".Notes.MetronomeActivity"
+            android:screenOrientation="landscape" />
+        <activity
             android:name=".Notes.NoteActivity"
-            android:screenOrientation="landscape" >
-
-        </activity>
+            android:screenOrientation="landscape"></activity>
         <activity
             android:name=".Stream.BluetoothActivity"
             android:screenOrientation="landscape" />
