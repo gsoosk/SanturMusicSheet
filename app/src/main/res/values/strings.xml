@@ -14,4 +14,7 @@
     <string name="music_sheet">Music Sheet</string>
     <string name="blutooth_setting">Bluetooth Setting</string>
     <string name="about">An about text for music sheet</string>
+    <string name="sure_save">Do you want to save this sheet?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

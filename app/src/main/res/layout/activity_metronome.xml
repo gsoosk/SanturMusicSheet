@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Notes.MetronomeActivity"
-    android:background="@drawable/back">
+    android:background="@drawable/back2">
 
     <EditText
         android:id="@+id/number"

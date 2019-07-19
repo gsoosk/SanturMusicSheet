@@ -1,8 +1,10 @@
 package far.zad.gsoosk.musiccomposer.Notes;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.AudioAttributes;
@@ -49,7 +51,7 @@ public class NoteActivity  extends AppCompatActivity {
     private int kookSound;
     private boolean isPlaying = false;
     private int time;
-
+    private boolean exiting = false;
 
 
 
@@ -95,14 +97,13 @@ public class NoteActivity  extends AppCompatActivity {
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
         final HorizontalScrollView scrollView = (HorizontalScrollView) findViewById(R.id.scroll);
 
-        LineView newView = new LineView(getBaseContext());
+        final LineView newView = new LineView(getBaseContext());
         newView.setNoteBase(selectedBtn.getIndex());
         linearLayout.addView(newView, new LinearLayout.LayoutParams(dps(YEK_LA_CHANG_WIDTH), LinearLayout.LayoutParams.MATCH_PARENT));
 
         newView.setLineViewListener(new LineView.LineViewListener() {
             @Override
             public void onNoteAdded(Note note, boolean editing) {
-
                 playNote(note);
                 if(!editing)
                 {
@@ -282,7 +283,9 @@ public class NoteActivity  extends AppCompatActivity {
         {
             public void run()
             {
-                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
+                final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
+                final HorizontalScrollView scrollView = (HorizontalScrollView) findViewById(R.id.scroll);
+
                 boolean twoHand = false;
                 for(int i = 0 ; i < notes.size() ; i++)
                 {
@@ -294,7 +297,14 @@ public class NoteActivity  extends AppCompatActivity {
                         continue;
 
                     playNote(note);
-                    (( LineView )linearLayout.getChildAt(i)).play();
+                    final LineView lineView = (( LineView )linearLayout.getChildAt(i));
+                    lineView.play();
+                    scrollView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                           scrollView.smoothScrollTo(lineView.getLeft() - lineView.getWidth(), 0);
+                        }
+                    });
 
 
 
@@ -516,12 +526,15 @@ public class NoteActivity  extends AppCompatActivity {
                 loadFile(uri);
             }
         }
-        if (requestCode == WRITE_REQUEST_CODE && resultCode == Activity.RESULT_OK)
+        else if (requestCode == WRITE_REQUEST_CODE && resultCode == Activity.RESULT_OK)
         {
             Uri uri = null;
             if (resultData != null) {
                 uri = resultData.getData();
                 saveFile(uri);
+                if(exiting) {
+                    finish();
+                }
 
             }
         }
@@ -531,6 +544,7 @@ public class NoteActivity  extends AppCompatActivity {
             TextView textView = findViewById(R.id.file_name_text);
             textView.setText(filename);
         }
+
     }
     private String queryName(ContentResolver resolver, Uri uri) {
         Cursor returnCursor =
@@ -684,5 +698,27 @@ public class NoteActivity  extends AppCompatActivity {
             }
         });
     }
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.sure_save)
+                .setCancelable(false)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        createFile();
+                        exiting = true;
+                    }
+                })
+                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                        finish();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+
 }
 
