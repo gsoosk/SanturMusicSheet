@@ -88,6 +88,21 @@ public class LineView extends View {
         paint.setColor(Color.BLACK);
         listener = null;
     }
+    // Delete Listener
+    public interface LineViewDeleteListener
+    {
+        public void onViewDeleteCalled();
+    }
+    private LineViewDeleteListener deleteListener;
+    public void setLineViewDeleteListener(LineViewDeleteListener l) { deleteListener = l; }
+
+    // Add Listener
+    public interface LineViewAddListener
+    {
+        public void onViewAddCalled();
+    }
+    private LineViewAddListener addListener;
+    public void setLineViewAddListener(LineViewAddListener l) { addListener = l; }
 
     public LineView(Context context) {
         super(context);
@@ -107,7 +122,8 @@ public class LineView extends View {
     @Override
     public void onDraw(Canvas canvas) {
         baseHeight = canvas.getHeight() / 6;
-        width = canvas.getWidth();
+        width = canvas.getWidth() * 7/8;
+        drawAddBtn(canvas);
 
         float height = ( canvas.getHeight() - baseHeight ) / 24;
         noteHeight = height;
@@ -122,7 +138,7 @@ public class LineView extends View {
         drawKharakNumber(canvas);
 
         drawHand(canvas);
-
+        drawDeleteBtn(canvas);
         drawEditBtn(canvas);
 
         drawTwoHandBox(canvas);
@@ -134,20 +150,41 @@ public class LineView extends View {
 
         if(playing) {
             paint.setColor(getResources().getColor(color.playing));
-            canvas.drawRect(0, 0, canvas.getWidth(), ( canvas.getHeight()), paint);
+            canvas.drawRect(0, 0, width, ( canvas.getHeight()), paint);
         }
 
+    }
+    public void drawAddBtn(Canvas canvas){
+        paint.setColor(getResources().getColor(color.add_back));
+        canvas.drawRect(width,0, canvas.getWidth(), canvas.getHeight(), paint);
+        float addWidth = canvas.getWidth()* 1/8;
+        Drawable plusPic = getResources().getDrawable(R.drawable.plus);
+        float addHeight = canvas.getHeight();
+
+        plusPic.setBounds((int)(width + addWidth/2 - addWidth/2 * 2 / 3), (int)(addHeight/2 - addWidth/2),
+                (int)(width + addWidth/2 + addWidth/2 * 2 / 3), (int)(addHeight/2 + addWidth/2));
+        plusPic.draw(canvas);
     }
     public void drawHand(Canvas canvas)
     {
         if(note != null)
         {
-            paint.setColor(getResources().getColor(color.secondary_line_color));
-            canvas.drawLine(canvas.getWidth(), baseHeight / 2, canvas.getWidth(), (int) baseHeight, paint);
             Drawable handPic = note.getHand() == 1 ? getResources().getDrawable(drawable.ic_hand_rast) :
                     getResources().getDrawable(drawable.ic_hand_chap);
-            handPic.setBounds(canvas.getWidth() / 2 + (canvas.getWidth()/2) / 3 , (int) (baseHeight / 2 + baseHeight/2 * 10 / 100),
-                    canvas.getWidth() / 2 + canvas.getWidth()/2 * 2 / 3, (int) (baseHeight / 2 + baseHeight/2 * 90 / 100));
+            handPic.setBounds((int)(width
+                            / 2 + (width/2)* 2/ 5) , (int) (baseHeight / 2 + baseHeight/2 * 10 / 100),
+                    (int)(width / 2 + width/2 * 4 / 5), (int) (baseHeight / 2 + baseHeight/2 * 90 / 100));
+            handPic.draw(canvas);
+        }
+
+    }
+    public void drawDeleteBtn(Canvas canvas)
+    {
+        if(note != null)
+        {
+            Drawable handPic = getResources().getDrawable(drawable.delete);
+            handPic.setBounds((int)(width / 2 - (width/2)/ 5) , (int) (baseHeight / 2 + baseHeight/2 * 10 / 100),
+                    (int)(width / 2 + width/2  / 5), (int) (baseHeight / 2 + baseHeight/2 * 90 / 100));
             handPic.draw(canvas);
         }
 
@@ -157,7 +194,7 @@ public class LineView extends View {
         if(note != null && note.isWithTwoHand())
         {
             paint.setColor(getResources().getColor(color.two_hands));
-            canvas.drawRect(0, 0, canvas.getWidth(), baseHeight/2 * 90/100, paint);
+            canvas.drawRect(0, 0, width, baseHeight/2 * 90/100, paint);
         }
     }
 
@@ -167,8 +204,8 @@ public class LineView extends View {
         {
             canvas.drawLine(0, baseHeight / 2, 0, (int) baseHeight, paint);
             Drawable handPic = getResources().getDrawable(drawable.ic_note_interface_symbol) ;
-            handPic.setBounds( (canvas.getWidth()/2) / 3 ,  (int) (baseHeight / 2 + baseHeight/2 * 10 / 100),
-                    canvas.getWidth()/2 * 2 / 3,  (int) (baseHeight / 2 + baseHeight/2 * 90 / 100));
+            handPic.setBounds( (int)((width/2) * 1 / 5) ,  (int) (baseHeight / 2 + baseHeight/2 * 10 / 100),
+                    (int)(width/2 * 3 / 5),  (int) (baseHeight / 2 + baseHeight/2 * 90 / 100));
             handPic.draw(canvas);
         }
     }
@@ -198,6 +235,13 @@ public class LineView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
+        if(x > width){
+            if(event.getAction() == MotionEvent.ACTION_UP) {
+                if (addListener != null)
+                    addListener.onViewAddCalled();
+            }
+            return true;
+        }
         if(isNoteSelected)
         {
             if(y < baseHeight / 2)
@@ -213,18 +257,30 @@ public class LineView extends View {
             {
                 if(event.getAction() == MotionEvent.ACTION_UP)
                 {
-                    if(x > width/2)
-                    {
-                        note.changeHand();
-                        invalidate();
-                        return true;
-                    }
-                    else
+
+                    if(x > width / 3 && x <= width*2 / 3)
                     {
                         note = null;
                         isNoteSelected = false;
                         can.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
                         editing = true;
+                        invalidate();
+                        if(deleteListener != null)
+                            deleteListener.onViewDeleteCalled();
+                        return true;
+                    }
+                    else if(x <= width / 3)
+                    {
+                        note = null;
+                        isNoteSelected = false;
+                        can.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+                        editing = true;
+                        invalidate();
+                        return true;
+                    }
+                    else if(x > width*2/3 )
+                    {
+                        note.changeHand();
                         invalidate();
                         return true;
                     }
@@ -324,8 +380,10 @@ public class LineView extends View {
             drawNote_1_2(note);
         else if(note.getKind() >= 3 &&  note.getKind() <= 5 )
             drawNote_3to5(note);
-        else if(note.getKind() >= 6 && note.getKind() <=  9)
-            drawNote_6to9(note);
+        else if(note.getKind() >= 6 && note.getKind() <= 7)
+            drawNote_6and7(note);
+        else if(note.getKind() >= 8 && note.getKind() <=  11)
+            drawNote_8to11(note);
     }
 
 
@@ -434,21 +492,38 @@ public class LineView extends View {
                 (int) (can.getWidth() / 2 +  note1Width),  (int) (y + note1Height));
         notePic.draw(can);
     }
-    public void drawNote_6to9(Note note)
+    public void drawNote_6and7(Note note)
+    {
+        Drawable notePic = null;
+        if(note.getKind() == 6) {
+            notePic = getResources().getDrawable(drawable.silent_4);
+        } else if(note.getKind() == 7) {
+            notePic = getResources().getDrawable(drawable.silent_5);
+        }
+
+        float y = baseHeight + (10 * noteHeight);
+        float width = Note.SILENT_NOTE_GERD_ON_HEIGHT(noteHeight);
+
+        notePic.setBounds(can.getWidth() / 2 - (int) width,  (int) y,
+                can.getWidth() / 2 + (int) width,  (int) (y + 2*noteHeight));
+        notePic.draw(can);
+
+    }
+    public void drawNote_8to11(Note note)
     {
         Drawable notePic = null;
         switch (note.getKind())
         {
-            case 6 :
+            case 8 :
                 notePic = getResources().getDrawable( drawable.silent_0);
                 break;
-            case 7 :
+            case 9 :
                 notePic = getResources().getDrawable( drawable.silent_1);
                 break;
-            case 8 :
+            case 10 :
                 notePic = getResources().getDrawable( drawable.silent_2);
                 break;
-            case 9 :
+            case 11 :
                 notePic = getResources().getDrawable( drawable.silent_3);
                 break;
         }
@@ -477,7 +552,7 @@ public class LineView extends View {
                 paint.setColor(getResources().getColor(color.main_line_color));
 
             x += height/2;
-            canvas.drawLine(0, x, canvas.getWidth(), x , paint);
+            canvas.drawLine(0, x, width, x , paint);
             x+= height/2;
             x += height;
         }
@@ -495,7 +570,7 @@ public class LineView extends View {
             noteNumber = 22;
         previewRect = new Rect();
         int  height = (int) (baseHeight + ( noteNumber * noteHeight) + (noteHeight / 2));
-        previewRect.set(0, height - (int) noteHeight / 2,  can.getWidth(), height + (int) noteHeight * 3/2);
+        previewRect.set(0, height - (int) noteHeight / 2,  (int) width, height + (int) noteHeight * 3/2);
     }
 
 }

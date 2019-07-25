@@ -42,7 +42,8 @@ import far.zad.gsoosk.musiccomposer.Stream.BluetoothConnectionService;
 public class NoteActivity  extends AppCompatActivity {
 
     public static final int INITIAL_BUTTON = 2;
-    public static final int YEK_LA_CHANG_WIDTH = 140;
+    public static final int YEK_LA_CHANG_WIDTH = 160;
+    public static final int ADD_WIDTH = 20;
     private ArrayList<Note> notes  = new ArrayList<Note>();
     private NoteButton selectedBtn = null;
     private SoundPool sp;
@@ -94,13 +95,12 @@ public class NoteActivity  extends AppCompatActivity {
     }
     public void addNoteLine()
     {
-        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
+        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
         final HorizontalScrollView scrollView = (HorizontalScrollView) findViewById(R.id.scroll);
 
         final LineView newView = new LineView(getBaseContext());
         newView.setNoteBase(selectedBtn.getIndex());
         linearLayout.addView(newView, new LinearLayout.LayoutParams(dps(YEK_LA_CHANG_WIDTH), LinearLayout.LayoutParams.MATCH_PARENT));
-
         newView.setLineViewListener(new LineView.LineViewListener() {
             @Override
             public void onNoteAdded(Note note, boolean editing) {
@@ -120,6 +120,32 @@ public class NoteActivity  extends AppCompatActivity {
             }
         });
 
+       setLineViewListeners(newView);
+
+
+
+    }
+
+    public void setLineViewListeners(final LineView newView) {
+        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
+        newView.setLineViewDeleteListener(new LineView.LineViewDeleteListener() {
+            @Override
+            public void onViewDeleteCalled() {
+                linearLayout.removeView(newView);
+            }
+        });
+
+        newView.setLineViewAddListener(new LineView.LineViewAddListener() {
+            @Override
+            public void onViewAddCalled() {
+                int index = linearLayout.indexOfChild(newView) + 1;
+                LineView view = new LineView(getBaseContext());
+                view.setNoteBase(selectedBtn.getIndex());
+                linearLayout.addView(view, index, new LinearLayout.LayoutParams(dps(YEK_LA_CHANG_WIDTH), LinearLayout.LayoutParams.MATCH_PARENT));
+                setLineViewListeners(view);
+            }
+        });
+
     }
 
     public void setNoteBarListener()
@@ -127,7 +153,7 @@ public class NoteActivity  extends AppCompatActivity {
         LinearLayout noteBar = (LinearLayout) findViewById(R.id.note_bar);
         initSelected((NoteButton) noteBar.getChildAt(INITIAL_BUTTON));
 
-        for(int i = 0 ; i < 10 ; i++ )
+        for(int i = 0 ; i < 12 ; i++ )
         {
             final NoteButton btn = (NoteButton) noteBar.getChildAt(i);
             final int base = i;
@@ -162,7 +188,7 @@ public class NoteActivity  extends AppCompatActivity {
         for(int i = 0 ; i < linearLayout.getChildCount(); i++)
         {
             LineView view = (LineView) linearLayout.getChildAt(i);
-            if(view.editing || !view.isNoteSelected)
+            if(view.editing || !view.isNoteSelected || view.note == null)
                 view.setNoteBase(selectedBtn.getIndex());
         }
 
@@ -178,7 +204,7 @@ public class NoteActivity  extends AppCompatActivity {
                 {
                     //Remove last note
                     linearLayout.removeViewAt(linearLayout.getChildCount() - 2);
-                    notes.remove(notes.size() - 1);
+//                    notes.remove(notes.size() - 1);
 
                 }
             }
@@ -241,7 +267,7 @@ public class NoteActivity  extends AppCompatActivity {
     {
         if(note == null)
             return;
-        if(note.getKind() >= 6 && note.getKind() <=  9)
+        if(note.getKind() >= 6 && note.getKind() <=  11)
             return ;
         if(note.getNoteNumber() == 7 && note.getKharak() == 9)
             sp.play(secondarySounds[0], 1, 1, 0, 0, 1);
@@ -287,7 +313,7 @@ public class NoteActivity  extends AppCompatActivity {
                 final HorizontalScrollView scrollView = (HorizontalScrollView) findViewById(R.id.scroll);
 
                 boolean twoHand = false;
-                for(int i = 0 ; i < notes.size() ; i++)
+                for(int i = 0 ; i < linearLayout.getChildCount() ; i++)
                 {
                     if(!isPlaying)
                         break;
@@ -325,7 +351,7 @@ public class NoteActivity  extends AppCompatActivity {
                         pause = true;
                     }
                     try{
-                        Thread.sleep(notes.get(i).getSleepTime(time));
+                        Thread.sleep(note.getSleepTime(time));
                     }
                     catch (Exception ex)
                     {
@@ -603,6 +629,7 @@ public class NoteActivity  extends AppCompatActivity {
                 notes.add(newNote);
 
 
+
             }
             addNotesView();
         }
@@ -632,6 +659,7 @@ public class NoteActivity  extends AppCompatActivity {
                     newView.setHand(notes.get(index).getHand(), notes.get(index).isWithTwoHand());
                     newView.postInvalidate();
                     newView.setFromOutSide(true);
+                    setLineViewListeners(newView);
                 }
             });
 //
@@ -664,10 +692,10 @@ public class NoteActivity  extends AppCompatActivity {
     public String getNotesString()
     {
         String output = "SANTUR\n";
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
 
-        for(int i = 0 ; i < notes.size() ; i++)
+        for(int i = 0 ; i < linearLayout.getChildCount() ; i++)
         {
-            LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
             Note note = ((LineView)linearLayout.getChildAt(i)).note;
             if(note != null)
                 output += Integer.toString(note.getKind()) + ":" + Integer.toString(note.getNoteNumber() )+ ":" +

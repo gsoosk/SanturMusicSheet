@@ -16,6 +16,7 @@ public class Note {
     public static float  NOTE_3_HEIGHT_ON_HEAD_DOWN (float x) {return x * 105 / 28;}
     public static  float  NOTE_3_WIDTH_ON_HEIGHT_DOWN(float x) {return x * 46 / 105;}
     public static  float  SILENT_NOTE_WIDTH_ON_HEIGHT(float x) {return x * 32 / 105;}
+    public static  float SILENT_NOTE_GERD_ON_HEIGHT(float x) {return x * 50 / 30;}
 
     private int noteNumber;
     private int kind;
@@ -111,15 +112,21 @@ public class Note {
                 sleepTime = time / 8;
                 break;
             case 6 :
-                sleepTime = time ;
+                sleepTime = time * 4;
                 break;
             case 7 :
-                sleepTime = time / 2;
+                sleepTime = time * 2;
                 break;
             case 8 :
-                sleepTime = time / 4;
+                sleepTime = time ;
                 break;
             case 9 :
+                sleepTime = time / 2;
+                break;
+            case 10 :
+                sleepTime = time / 4;
+                break;
+            case 11 :
                 sleepTime = time / 8;
                 break;
         }
