@@ -42,6 +42,8 @@ public class LineView extends View {
     private boolean fromOutSide = false;
     private float baseHeight;
     private float width ;
+    public PAIR twoHandPair = PAIR.RIGHT;
+    public enum PAIR { RIGHT, LEFT}
     public boolean editing = false;
 
     public void setFromOutSide(boolean fromOutSide)
@@ -104,6 +106,22 @@ public class LineView extends View {
     private LineViewAddListener addListener;
     public void setLineViewAddListener(LineViewAddListener l) { addListener = l; }
 
+    // Two Hand Listener
+    public interface LineViewTwoHandListener
+    {
+        public void onViewTwoHandCalled();
+    }
+    private LineViewTwoHandListener twoHandListener;
+    public void setLineViewTwoHandListener(LineViewTwoHandListener l) { twoHandListener = l; }
+
+    // Edit Listener
+    public interface LineViewEditListener
+    {
+        public void onViewEditCalled();
+    }
+    private LineViewEditListener editListener;
+    public void setLineViewEditListener(LineViewEditListener l) { editListener = l; }
+
     public LineView(Context context) {
         super(context);
         init();
@@ -141,6 +159,7 @@ public class LineView extends View {
         drawDeleteBtn(canvas);
         drawEditBtn(canvas);
 
+        drawTwoHandTransparentBox(canvas);
         drawTwoHandBox(canvas);
 
         paint.setColor(getResources().getColor(color.note_prev));
@@ -197,6 +216,14 @@ public class LineView extends View {
             canvas.drawRect(0, 0, width, baseHeight/2 * 90/100, paint);
         }
     }
+    public void drawTwoHandTransparentBox(Canvas canvas)
+    {
+        if(note != null && !note.isWithTwoHand())
+        {
+            paint.setColor(getResources().getColor(color.two_hands_transparent));
+            canvas.drawRect(0, 0, width, baseHeight/2 * 90/100, paint);
+        }
+    }
 
     public void drawEditBtn(Canvas canvas)
     {
@@ -231,12 +258,27 @@ public class LineView extends View {
 
     }
 
+    public void changeTwoHand() {
+        note.changeTwoHand();
+        invalidate();
+        if(twoHandListener != null)
+            twoHandListener.onViewTwoHandCalled();
+    }
+    public void setTwoHand(boolean h) {
+        if(note != null) {
+            note.setWithTwoHand(h);
+            invalidate();
+        }
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
         if(x > width){
             if(event.getAction() == MotionEvent.ACTION_UP) {
+                if(twoHandPair == LineView.PAIR.RIGHT)
+                    setTwoHand(false);
                 if (addListener != null)
                     addListener.onViewAddCalled();
             }
@@ -248,8 +290,7 @@ public class LineView extends View {
             {
                 if(event.getAction() == MotionEvent.ACTION_UP)
                 {
-                    note.changeTwoHand();
-                    invalidate();
+                    this.changeTwoHand();
                     return true;
                 }
             }
@@ -276,6 +317,8 @@ public class LineView extends View {
                         can.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
                         editing = true;
                         invalidate();
+                        if(editListener != null)
+                            editListener.onViewEditCalled();
                         return true;
                     }
                     else if(x > width*2/3 )
@@ -367,8 +410,6 @@ public class LineView extends View {
             listener.onNoteAdded(note, editing);
         editing = false;
 
-        Log.d("new Note : ", Integer.toString(noteNumber) + " " + Integer.toString(noteBase));
-
     }
     public void drawNote(Note note)
     {
@@ -384,6 +425,25 @@ public class LineView extends View {
             drawNote_6and7(note);
         else if(note.getKind() >= 8 && note.getKind() <=  11)
             drawNote_8to11(note);
+        else if(note.getKind() >= 12 && note.getKind() <= 13)
+            drawNoteRepeat(note);
+    }
+    public void drawNoteRepeat(Note note)
+    {
+        Drawable notePic = null;
+        if(note.getKind() == 12) {
+            notePic = getResources().getDrawable(drawable.repeat_start);
+        } else if(note.getKind() == 13) {
+            notePic = getResources().getDrawable(drawable.repeat_stop);
+        }
+
+        float y = baseHeight + (4 * noteHeight);
+        float width = Note.REPEAT_WIDTH_ON_HIGHT(noteHeight);
+
+        notePic.setBounds(can.getWidth() / 2 - (int) width,  (int) y,
+                can.getWidth() / 2 + (int) width,  (int) (y + 16*noteHeight));
+        notePic.draw(can);
+
     }
 
 
@@ -571,6 +631,10 @@ public class LineView extends View {
         previewRect = new Rect();
         int  height = (int) (baseHeight + ( noteNumber * noteHeight) + (noteHeight / 2));
         previewRect.set(0, height - (int) noteHeight / 2,  (int) width, height + (int) noteHeight * 3/2);
+    }
+
+    public void inv() {
+        invalidate();
     }
 
 }

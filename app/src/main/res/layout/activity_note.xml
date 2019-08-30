@@ -118,6 +118,20 @@
                 android:layout_weight="1"
                 app:srcCompat="@drawable/silent_3"
                 android:padding="5dp"/>
+            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
+                android:id="@+id/brepeat_start"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/repeat_start"
+                android:padding="5dp"/>
+            <far.zad.gsoosk.musiccomposer.Notes.NoteButton
+                android:id="@+id/brepeat_stop"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/repeat_stop"
+                android:padding="5dp"/>
 
         </LinearLayout>
 

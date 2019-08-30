@@ -17,12 +17,20 @@ public class Note {
     public static  float  NOTE_3_WIDTH_ON_HEIGHT_DOWN(float x) {return x * 46 / 105;}
     public static  float  SILENT_NOTE_WIDTH_ON_HEIGHT(float x) {return x * 32 / 105;}
     public static  float SILENT_NOTE_GERD_ON_HEIGHT(float x) {return x * 50 / 30;}
+    public static float REPEAT_WIDTH_ON_HIGHT(float x) {return x * 50 / 26;}
 
     private int noteNumber;
     private int kind;
     private int hand;
     private static int globalHand = 1;
-    private boolean withTwoHand;
+    public boolean withTwoHand;
+    public boolean repeated = false;
+    public boolean isRepeatEnd() {
+        return kind == 13;
+    }
+    public boolean isRepeatStart() {
+        return kind == 12;
+    }
 
 
 
@@ -132,6 +140,7 @@ public class Note {
         }
         return sleepTime;
     }
+
 
 
 

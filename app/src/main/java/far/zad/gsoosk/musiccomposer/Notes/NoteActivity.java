@@ -131,13 +131,23 @@ public class NoteActivity  extends AppCompatActivity {
         newView.setLineViewDeleteListener(new LineView.LineViewDeleteListener() {
             @Override
             public void onViewDeleteCalled() {
+                deletePairViewTwoHand(newView);
                 linearLayout.removeView(newView);
+            }
+        });
+
+        newView.setLineViewEditListener(new LineView.LineViewEditListener() {
+            @Override
+            public void onViewEditCalled() {
+                deletePairViewTwoHand(newView);
             }
         });
 
         newView.setLineViewAddListener(new LineView.LineViewAddListener() {
             @Override
             public void onViewAddCalled() {
+                if(newView.twoHandPair == LineView.PAIR.RIGHT)
+                    deletePairViewTwoHand(newView);
                 int index = linearLayout.indexOfChild(newView) + 1;
                 LineView view = new LineView(getBaseContext());
                 view.setNoteBase(selectedBtn.getIndex());
@@ -146,6 +156,54 @@ public class NoteActivity  extends AppCompatActivity {
             }
         });
 
+        newView.setLineViewTwoHandListener(new LineView.LineViewTwoHandListener() {
+            @Override
+            public void onViewTwoHandCalled() {
+                if(newView.note.withTwoHand) {
+                    // Check if there was a second two hand after it
+                    int indexOfRight = linearLayout.indexOfChild(newView) + 1;
+                    LineView rightView = (LineView) linearLayout.getChildAt(indexOfRight);
+                    if (rightView == null || rightView.note == null || rightView.note.withTwoHand)
+                        newView.setTwoHand(false);
+                    else {
+                        newView.twoHandPair = LineView.PAIR.RIGHT;
+                        rightView.twoHandPair = LineView.PAIR.LEFT;
+                        rightView.setTwoHand(true);
+
+                        if(rightView.note.getNoteNumber() > newView.note.getNoteNumber()) {
+                            rightView.note.setHand(1);
+                            newView.note.setHand(2);
+                            rightView.inv();
+                            newView.inv();
+                        }
+                        else {
+                            rightView.note.setHand(2);
+                            newView.note.setHand(1);
+                            rightView.inv();
+                            newView.inv();
+                        }
+                    }
+                }
+                else {
+                    deletePairViewTwoHand(newView);
+                }
+            }
+        });
+
+    }
+    public void deletePairViewTwoHand(LineView newView) {
+        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
+        LineView pairView = null;
+        if(newView.twoHandPair == LineView.PAIR.RIGHT) {
+            pairView = (LineView) linearLayout.getChildAt(
+                    linearLayout.indexOfChild(newView) + 1
+            );
+        } else if(newView.twoHandPair == LineView.PAIR.LEFT) {
+            pairView = (LineView) linearLayout.getChildAt(
+                    linearLayout.indexOfChild(newView) - 1
+            );
+        }
+        pairView.setTwoHand(false);
     }
 
     public void setNoteBarListener()
@@ -153,7 +211,7 @@ public class NoteActivity  extends AppCompatActivity {
         LinearLayout noteBar = (LinearLayout) findViewById(R.id.note_bar);
         initSelected((NoteButton) noteBar.getChildAt(INITIAL_BUTTON));
 
-        for(int i = 0 ; i < 12 ; i++ )
+        for(int i = 0 ; i < 14 ; i++ )
         {
             final NoteButton btn = (NoteButton) noteBar.getChildAt(i);
             final int base = i;
@@ -311,6 +369,7 @@ public class NoteActivity  extends AppCompatActivity {
             {
                 final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
                 final HorizontalScrollView scrollView = (HorizontalScrollView) findViewById(R.id.scroll);
+                ArrayList<Integer> repeatNotes = new ArrayList<>();
 
                 boolean twoHand = false;
                 for(int i = 0 ; i < linearLayout.getChildCount() ; i++)
@@ -321,6 +380,32 @@ public class NoteActivity  extends AppCompatActivity {
 
                     if(note == null)
                         continue;
+
+                    Log.d("NOTE NOM", Integer.toString(note.getNoteNumber()));
+
+                    // repeat note
+                    if(note.isRepeatStart())
+                        continue;
+                    if(note.isRepeatEnd() && note.repeated)
+                        continue;
+                    if(note.isRepeatEnd() && !note.repeated) {
+                        int j = i;
+                        boolean reverse = true;
+                        while(reverse && j > 0) {
+                            Note innerNote = (( LineView )linearLayout.getChildAt(j)).note;
+                            if(innerNote.isRepeatStart()) {
+                                innerNote.repeated = true;
+                                reverse = false;
+                                repeatNotes.add(j);
+                                break;
+                            }
+                            j--;
+                        }
+                        repeatNotes.add(i);
+                        i = j;
+                        note.repeated = true;
+                        continue;
+                    }
 
                     playNote(note);
                     final LineView lineView = (( LineView )linearLayout.getChildAt(i));
@@ -364,6 +449,14 @@ public class NoteActivity  extends AppCompatActivity {
                     }
 
                 }
+                for(int i = 0 ; i < repeatNotes.size() ; i++) {
+                    Note note = (( LineView )linearLayout.getChildAt(repeatNotes.get(i))).note;
+                    if(note == null)
+                        continue;
+                    note.repeated = false;
+
+                }
+
                 ImageButton playBtn = (ImageButton) findViewById(R.id.play_btn);
                 playBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_button));
                 isPlaying = false;
