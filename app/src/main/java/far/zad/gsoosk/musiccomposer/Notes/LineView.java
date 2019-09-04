@@ -277,8 +277,6 @@ public class LineView extends View {
         float y = event.getY();
         if(x > width){
             if(event.getAction() == MotionEvent.ACTION_UP) {
-                if(twoHandPair == LineView.PAIR.RIGHT)
-                    setTwoHand(false);
                 if (addListener != null)
                     addListener.onViewAddCalled();
             }

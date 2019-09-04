@@ -96,37 +96,19 @@ public class NoteActivity  extends AppCompatActivity {
     public void addNoteLine()
     {
         final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
-        final HorizontalScrollView scrollView = (HorizontalScrollView) findViewById(R.id.scroll);
+
 
         final LineView newView = new LineView(getBaseContext());
         newView.setNoteBase(selectedBtn.getIndex());
         linearLayout.addView(newView, new LinearLayout.LayoutParams(dps(YEK_LA_CHANG_WIDTH), LinearLayout.LayoutParams.MATCH_PARENT));
-        newView.setLineViewListener(new LineView.LineViewListener() {
-            @Override
-            public void onNoteAdded(Note note, boolean editing) {
-                playNote(note);
-                if(!editing)
-                {
-                    notes.add(note);
-                    addNoteLine();
-                    getWindow().getDecorView().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            scrollView.fullScroll(View.FOCUS_RIGHT);
-                        }
-                    });
-                }
 
-            }
-        });
-
-       setLineViewListeners(newView);
+        setLineViewListeners(newView, true);
 
 
 
     }
 
-    public void setLineViewListeners(final LineView newView) {
+    public void setLineViewListeners(final LineView newView, final boolean lastNote) {
         final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.s);
         newView.setLineViewDeleteListener(new LineView.LineViewDeleteListener() {
             @Override
@@ -146,13 +128,15 @@ public class NoteActivity  extends AppCompatActivity {
         newView.setLineViewAddListener(new LineView.LineViewAddListener() {
             @Override
             public void onViewAddCalled() {
-                if(newView.twoHandPair == LineView.PAIR.RIGHT)
+                if(newView.twoHandPair == LineView.PAIR.RIGHT && newView.note.withTwoHand) {
                     deletePairViewTwoHand(newView);
+                    newView.setTwoHand(false);
+                }
                 int index = linearLayout.indexOfChild(newView) + 1;
                 LineView view = new LineView(getBaseContext());
                 view.setNoteBase(selectedBtn.getIndex());
                 linearLayout.addView(view, index, new LinearLayout.LayoutParams(dps(YEK_LA_CHANG_WIDTH), LinearLayout.LayoutParams.MATCH_PARENT));
-                setLineViewListeners(view);
+                setLineViewListeners(view, false);
             }
         });
 
@@ -187,6 +171,26 @@ public class NoteActivity  extends AppCompatActivity {
                 else {
                     deletePairViewTwoHand(newView);
                 }
+            }
+        });
+
+        final HorizontalScrollView scrollView = (HorizontalScrollView) findViewById(R.id.scroll);
+        newView.setLineViewListener(new LineView.LineViewListener() {
+            @Override
+            public void onNoteAdded(Note note, boolean editing) {
+                playNote(note);
+                if(!editing && lastNote)
+                {
+                    notes.add(note);
+                    addNoteLine();
+                    getWindow().getDecorView().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            scrollView.fullScroll(View.FOCUS_RIGHT);
+                        }
+                    });
+                }
+
             }
         });
 
@@ -752,7 +756,7 @@ public class NoteActivity  extends AppCompatActivity {
                     newView.setHand(notes.get(index).getHand(), notes.get(index).isWithTwoHand());
                     newView.postInvalidate();
                     newView.setFromOutSide(true);
-                    setLineViewListeners(newView);
+                    setLineViewListeners(newView, false);
                 }
             });
 //
